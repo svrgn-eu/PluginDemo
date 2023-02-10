@@ -1,0 +1,29 @@
+variables:
+  PROJECT_NAME: PluginDemo
+before_script:
+  - echo "starting build for $PROJECT_NAME"
+  - echo "Restoring NuGet Packages..."
+  - dotnet restore "src/$PROJECT_NAME.sln"
+stages:
+  - build
+  - test
+build:
+  tags:
+  - c#
+  - windows
+  stage: build
+  script:
+  - echo "Release build..."
+  - dotnet build "src/$PROJECT_NAME.sln"
+  artifacts:
+    untracked: true
+test:
+  tags:
+  - c#
+  - windows
+  stage: test
+  script:
+  - echo "starting tests"
+  - dotnet test "src/$PROJECT_NAME.sln"
+  dependencies:
+  - build
