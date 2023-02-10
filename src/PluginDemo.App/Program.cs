@@ -8,8 +8,12 @@ namespace PluginDemo.App
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
             IPluginHostProvider hostProvider = new PluginHostProvider();
+
+            foreach (IPluginHost pluginHost in hostProvider.Plugins)
+            {
+                Console.WriteLine(pluginHost.Plugin.SayHello());
+            }
         }
     }
 }

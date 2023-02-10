@@ -9,7 +9,7 @@ namespace PluginDemo.Management
     {
         #region Properties
 
-        private IPlugin plugin;
+        public IPlugin Plugin { get; private set; }
 
         #endregion Properties
 
@@ -17,7 +17,7 @@ namespace PluginDemo.Management
 
         public PluginHost(IPlugin Plugin) 
         { 
-            this.plugin = Plugin;
+            this.Plugin = Plugin;
         }
 
         #endregion Construction

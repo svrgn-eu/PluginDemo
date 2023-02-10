@@ -33,9 +33,9 @@ namespace PluginDemo.Management
         {
             this.Plugins.Clear();
 
-            this.LoadPlugInDependencies();  //load two dependencies before being able to load the plugins themselves. TODO: specify more detailed and have a dedicated folder(?)
+            this.LoadPlugInDependencies("PluginDemo.Implementations.Base.dll", "PluginDemo.Interfaces.dll");  //load two dependencies before being able to load the plugins themselves. TODO: specify more detailed and have a dedicated folder(?)
             List<Assembly> plugInAssemblies = this.LoadPlugInAssemblies();
-            List<IPlugin> plugIns = GetPlugIns(plugInAssemblies);
+            List<IPlugin> plugIns = GetPlugins(plugInAssemblies);
 
             foreach (IPlugin plugin in plugIns)
             {
@@ -64,15 +64,17 @@ namespace PluginDemo.Management
         }
         #endregion LoadPlugInAssemblies
 
-        #region LoadPlugInDependencies
-        private void LoadPlugInDependencies()
+        #region LoadPlugInDependencies: pre-loads the dependencies of the plugins (if not loaded anyway) to avoid any missing files when loading the plugin
+        /// <summary>
+        /// pre-loads the dependencies of the plugins (if not loaded anyway) to avoid any missing files when loading the plugin
+        /// </summary>
+        /// <param name="AssemblyNames">name of assemblies to load, relative to program executable path</param>
+        private void LoadPlugInDependencies(params string[] AssemblyNames)
         {
             string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            string[] dependencyPaths = new string[] { "PluginDemo.Implementations.Base.dll", "PluginDemo.Interfaces.dll" };
-
             List<Assembly> dependencies = new List<Assembly>();
-            foreach (string dependencyPath in dependencyPaths)
+            foreach (string dependencyPath in AssemblyNames)
             {
                 string fullPath = Path.Combine(currentDirectory, dependencyPath);
                 dependencies.Add(Assembly.LoadFrom(fullPath));
@@ -80,9 +82,10 @@ namespace PluginDemo.Management
         }
         #endregion LoadPlugInDependencies
 
-        #region GetPlugIns
-        private List<IPlugin> GetPlugIns(List<Assembly> assemblies)
+        #region GetPlugins
+        private List<IPlugin> GetPlugins(List<Assembly> assemblies)
         {
+            List<IPlugin> result = default;
             List<Type> availableTypes = new List<Type>();
 
             foreach (Assembly currentAssembly in assemblies)
@@ -100,9 +103,11 @@ namespace PluginDemo.Management
             });
 
             // convert the list of Objects to an instantiated list of ICalculators
-            return pluginList.ConvertAll<IPlugin>(delegate (Type t) { return Activator.CreateInstance(t) as IPlugin; });  //todo. use different method for DI
+            result = pluginList.ConvertAll<IPlugin>(delegate (Type t) { return Activator.CreateInstance(t) as IPlugin; });  //todo. use different method for DI
+
+            return result;
         }
-        #endregion GetPlugIns
+        #endregion GetPlugins
 
         #endregion Methods
     }
