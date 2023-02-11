@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Plugins\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\PluginDemo.Implementations.Base\PluginDemo.Implementations.Base.csproj" />
     <ProjectReference Include="..\PluginDemo.Interfaces\PluginDemo.Interfaces.csproj" />
     <ProjectReference Include="..\PluginDemo.Management\PluginDemo.Management.csproj" />
@@ -24,7 +20,7 @@
     <None Update="Plugins\PluginDemo.Implementations.DemoPlugin1.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin2.dll">
+    <None Update="Plugins\SomeSpecialFolder\PluginDemo.Implementations.DemoPlugin2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Plugins\PluginDemo.Interfaces.dll">

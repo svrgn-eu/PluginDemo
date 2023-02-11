@@ -16,6 +16,5 @@ namespace PluginDemo.Implementations.Base
         public abstract string SayHello();
 
         #endregion Methods
-
     }
 }

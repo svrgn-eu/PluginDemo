@@ -28,7 +28,10 @@ namespace PluginDemo.Management
 
         #region Methods
 
-        #region Reload
+        #region Reload: reloads the plugin list from the file system
+        /// <summary>
+        /// reloads the plugin list from the file system
+        /// </summary>
         public void Reload()
         {
             this.Plugins.Clear();
@@ -50,7 +53,7 @@ namespace PluginDemo.Management
             List<Assembly> result = new List<Assembly>();
 
             DirectoryInfo dInfo = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "Plugins"));
-            FileInfo[] files = dInfo.GetFiles("*.dll");  //TODO: make recursive / subfolder-searching
+            FileInfo[] files = dInfo.GetFiles("*.dll", SearchOption.AllDirectories);
 
             if (null != files)
             {
@@ -82,7 +85,12 @@ namespace PluginDemo.Management
         }
         #endregion LoadPlugInDependencies
 
-        #region GetPlugins
+        #region GetPlugins: returns a list of IPlugin instances created from the types of the passed assemblies
+        /// <summary>
+        /// returns a list of IPlugin instances created from the types of the passed assemblies
+        /// </summary>
+        /// <param name="assemblies">the assemblies with IPlgin child Types</param>
+        /// <returns>a list of IPlugin instances</returns>
         private List<IPlugin> GetPlugins(List<Assembly> assemblies)
         {
             List<IPlugin> result = default;
@@ -102,7 +110,7 @@ namespace PluginDemo.Management
                 return interfaceTypes.Contains(typeof(IPlugin));  //20230210 no attribute used (yet)
             });
 
-            // convert the list of Objects to an instantiated list of ICalculators
+            // convert the list of Objects to an instantiated list of Plugins
             result = pluginList.ConvertAll<IPlugin>(delegate (Type t) { return Activator.CreateInstance(t) as IPlugin; });  //todo. use different method for DI
 
             return result;
