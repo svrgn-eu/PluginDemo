@@ -1,4 +1,5 @@
-﻿using PluginDemo.Interfaces;
+﻿using PluginDemo.Attributes;
+using PluginDemo.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -103,11 +104,24 @@ namespace PluginDemo.Management
             {
                 availableTypes.AddRange(currentAssembly.GetTypes());
             }
-            // get a list of objects that implement the ICalculator interface AND 
-            // have the CalculationPlugInAttribute
+
+            // get a list of objects that implement the IPlugin interface
             List<Type> pluginList = availableTypes.FindAll(delegate (Type t)
             {
                 List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
+
+                throw new NotImplementedException();
+
+                //TODO: get author attribute if available
+                object[] authorAttributes = t.GetCustomAttributes(typeof(AuthorAttribute), true);
+                if (authorAttributes != null && authorAttributes.Length > 0) 
+                {
+                    
+                }
+                //TODO: get name and version from filename
+
+                //***
+
                 //object[] arr = t.GetCustomAttributes(typeof(CalculationPlugInAttribute), true);
                 //return !(arr == null || arr.Length == 0) && interfaceTypes.Contains(typeof(IPlugin));
                 return interfaceTypes.Contains(typeof(IPlugin));  //20230210 no attribute used (yet)

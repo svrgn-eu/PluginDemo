@@ -1,10 +1,12 @@
-﻿using PluginDemo.Implementations.Base;
+﻿using PluginDemo.Attributes;
+using PluginDemo.Implementations.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace PluginDemo.Implementations.DemoPlugin1
 {
+    [Author("Author1")]
     public class DemoPlugin1 : BasePlugin
     {
         public override string SayHello()

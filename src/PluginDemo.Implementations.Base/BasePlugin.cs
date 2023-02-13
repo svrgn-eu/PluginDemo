@@ -9,6 +9,8 @@ namespace PluginDemo.Implementations.Base
     {
         #region Properties
 
+        public IPluginMetaData MetaData { get; private set; }
+
         #endregion Properties
 
         #region Methods
