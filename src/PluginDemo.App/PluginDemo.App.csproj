@@ -17,7 +17,13 @@
     <None Update="Plugins\PluginDemo.Implementations.Base.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin1-0.1.0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Plugins\PluginDemo.Implementations.DemoPlugin1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\SomeSpecialFolder\PluginDemo.Implementations.DemoPlugin2-0.1.0.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Plugins\SomeSpecialFolder\PluginDemo.Implementations.DemoPlugin2.dll">
