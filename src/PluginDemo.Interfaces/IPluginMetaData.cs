@@ -4,18 +4,16 @@ using System.Text;
 
 namespace PluginDemo.Interfaces
 {
-    public interface IPluginHostProvider
+    public interface IPluginMetaData
     {
         #region Properties
 
-        List<IPluginHost> Plugins { get; }
-        List<IPluginConfiguration> Configurations { get; }
+        IPluginIdentifier Identifier { get; }
+        string Author { get; }
 
         #endregion Properties
 
         #region Methods
-
-        void Reload();
 
         #endregion Methods
     }

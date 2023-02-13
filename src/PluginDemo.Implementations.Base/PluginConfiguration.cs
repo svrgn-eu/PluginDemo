@@ -5,28 +5,24 @@ using System.Text;
 
 namespace PluginDemo.Implementations.Base
 {
-    public class PluginHeader : IPluginHeader
+    public class PluginConfiguration : IPluginConfiguration
     {
         #region Properties
 
-        public string Name { get; private set; }
-
-        public Version Version { get; private set; }
-
-        public string Author { get; private set; }
-
         public List<IPluginSetting> Settings { get; private set; }
 
+        public IPluginIdentifier Identifier { get; private set; }
+
+        public string InstanceName { get; private set; }
 
         #endregion Properties
 
         #region Construction
 
-        public PluginHeader(string Name, Version Version, string Author)
+        public PluginConfiguration(string InstanceName, IPluginIdentifier Identifier)
         { 
-            this.Name = Name;
-            this.Version = Version;
-            this.Author = Author;
+            this.InstanceName = InstanceName;
+            this.Identifier = Identifier;
             this.Settings = new List<IPluginSetting>(); 
         }
 

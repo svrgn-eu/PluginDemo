@@ -14,6 +14,8 @@ namespace PluginDemo.Management
 
         public List<IPluginHost> Plugins { get; private set; }
 
+        public List<IPluginConfiguration> Configurations { get; private set; }
+
         #endregion Properties
 
         #region Construction
@@ -21,6 +23,7 @@ namespace PluginDemo.Management
         public PluginHostProvider() 
         {
             this.Plugins = new List<IPluginHost>();
+            this.Configurations = new List<IPluginConfiguration>();
             this.Reload();
         }
 
@@ -47,6 +50,24 @@ namespace PluginDemo.Management
         }
         #endregion Reload
 
+        #region LoadPlugInDependencies: pre-loads the dependencies of the plugins (if not loaded anyway) to avoid any missing files when loading the plugin
+        /// <summary>
+        /// pre-loads the dependencies of the plugins (if not loaded anyway) to avoid any missing files when loading the plugin
+        /// </summary>
+        /// <param name="AssemblyNames">name of assemblies to load, relative to program executable path</param>
+        private void LoadPlugInDependencies(params string[] AssemblyNames)
+        {
+            string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            List<Assembly> dependencies = new List<Assembly>();
+            foreach (string dependencyPath in AssemblyNames)
+            {
+                string fullPath = Path.Combine(currentDirectory, dependencyPath);
+                dependencies.Add(Assembly.LoadFrom(fullPath));
+            }
+        }
+        #endregion LoadPlugInDependencies
+
         #region LoadPlugInAssemblies
         private List<Assembly> LoadPlugInAssemblies()
         {
@@ -66,24 +87,6 @@ namespace PluginDemo.Management
             return result;
         }
         #endregion LoadPlugInAssemblies
-
-        #region LoadPlugInDependencies: pre-loads the dependencies of the plugins (if not loaded anyway) to avoid any missing files when loading the plugin
-        /// <summary>
-        /// pre-loads the dependencies of the plugins (if not loaded anyway) to avoid any missing files when loading the plugin
-        /// </summary>
-        /// <param name="AssemblyNames">name of assemblies to load, relative to program executable path</param>
-        private void LoadPlugInDependencies(params string[] AssemblyNames)
-        {
-            string currentDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            List<Assembly> dependencies = new List<Assembly>();
-            foreach (string dependencyPath in AssemblyNames)
-            {
-                string fullPath = Path.Combine(currentDirectory, dependencyPath);
-                dependencies.Add(Assembly.LoadFrom(fullPath));
-            }
-        }
-        #endregion LoadPlugInDependencies
 
         #region GetPlugins: returns a list of IPlugin instances created from the types of the passed assemblies
         /// <summary>
