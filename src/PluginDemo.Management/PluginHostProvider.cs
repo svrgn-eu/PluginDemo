@@ -40,7 +40,7 @@ namespace PluginDemo.Management
         {
             this.Plugins.Clear();
 
-            this.LoadPlugInDependencies("PluginDemo.Implementations.Base.dll", "PluginDemo.Interfaces.dll");  //load two dependencies before being able to load the plugins themselves. TODO: specify more detailed and have a dedicated folder(?)
+            this.LoadPlugInDependencies("PluginDemo.Implementations.Base.dll", "PluginDemo.Interfaces.dll", "PluginDemo.Attributes.dll");  //load two dependencies before being able to load the plugins themselves. TODO: specify more detailed and have a dedicated folder(?)
             List<Assembly> plugInAssemblies = this.LoadPlugInAssemblies();
             List<IPlugin> plugIns = GetPlugins(plugInAssemblies);
 
@@ -110,15 +110,17 @@ namespace PluginDemo.Management
             {
                 List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
 
-                throw new NotImplementedException();
-
                 //TODO: get author attribute if available
                 object[] authorAttributes = t.GetCustomAttributes(typeof(AuthorAttribute), true);
-                if (authorAttributes != null && authorAttributes.Length > 0) 
+                if (authorAttributes != null && authorAttributes.Length.Equals(1)) 
                 {
-                    
+                    AuthorAttribute authorAttribute = (AuthorAttribute)authorAttributes[0];
+                    throw new NotImplementedException();
                 }
+
+                throw new NotImplementedException();
                 //TODO: get name and version from filename
+
 
                 //***
 

@@ -13,10 +13,6 @@ namespace PluginDemo.Attributes
         public AuthorAttribute(string Name)
         {
             this.Name = Name;
-
-            // TODO: Implement code here
-
-            throw new NotImplementedException();
         }
     }
 }
