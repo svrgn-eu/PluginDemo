@@ -110,18 +110,16 @@ namespace PluginDemo.Management
             List<Type> pluginList = availableTypes.FindAll(delegate (Type t)
             {
                 List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
-                //object[] arr = t.GetCustomAttributes(typeof(CalculationPlugInAttribute), true);
-                //return !(arr == null || arr.Length == 0) && interfaceTypes.Contains(typeof(IPlugin));
-                return interfaceTypes.Contains(typeof(IPlugin));  //20230210 no attribute used (yet)
+                return interfaceTypes.Contains(typeof(IPlugin));
             });
 
             if (pluginList != null && pluginList.Count > 0)
             {
                 result = new List<IPlugin>();
-                // get metadata
+                //get metadata
                 foreach (Type pluginType in pluginList)
                 {
-                    //TODO: get author attribute if available
+                    //get author attribute if available
                     object[] authorAttributes = pluginType.GetCustomAttributes(typeof(AuthorAttribute), true);
                     AuthorAttribute authorAttribute = null;
                     if (authorAttributes != null && authorAttributes.Length.Equals(1))
@@ -147,8 +145,6 @@ namespace PluginDemo.Management
                     result.Add(resultPart);
                 }
             }
-            // convert the list of Objects to an instantiated list of Plugins
-            //result = pluginList.ConvertAll<IPlugin>(delegate (Type t) { return Activator.CreateInstance(t) as IPlugin; });  //todo. use different method for DI
 
             return result;
         }
