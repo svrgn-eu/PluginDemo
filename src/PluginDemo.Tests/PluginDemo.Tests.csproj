@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -19,6 +19,16 @@
     <ProjectReference Include="..\PluginDemo.Helpers.Serialization\PluginDemo.Helpers.Serialization.csproj" />
     <ProjectReference Include="..\PluginDemo.Implementations.Base\PluginDemo.Implementations.Base.csproj" />
     <ProjectReference Include="..\PluginDemo.Interfaces\PluginDemo.Interfaces.csproj" />
+    <ProjectReference Include="..\PluginDemo.Management\PluginDemo.Management.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin1-0.1.0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin2-0.1.0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
