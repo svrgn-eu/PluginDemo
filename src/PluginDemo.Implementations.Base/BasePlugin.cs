@@ -17,6 +17,13 @@ namespace PluginDemo.Implementations.Base
 
         public abstract string SayHello();
 
+        #region SetMetaData
+        public void SetMetaData(IPluginMetaData Data)
+        {
+            this.MetaData = Data;
+        }
+        #endregion SetMetaData
+
         #endregion Methods
     }
 }

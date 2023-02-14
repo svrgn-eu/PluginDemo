@@ -1,4 +1,5 @@
 ﻿using PluginDemo.Attributes;
+using PluginDemo.Helpers;
 using PluginDemo.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -93,7 +94,7 @@ namespace PluginDemo.Management
         /// <summary>
         /// returns a list of IPlugin instances created from the types of the passed assemblies
         /// </summary>
-        /// <param name="assemblies">the assemblies with IPlgin child Types</param>
+        /// <param name="assemblies">the assemblies with IPlugin child Types</param>
         /// <returns>a list of IPlugin instances</returns>
         private List<IPlugin> GetPlugins(List<Assembly> assemblies)
         {
@@ -109,28 +110,45 @@ namespace PluginDemo.Management
             List<Type> pluginList = availableTypes.FindAll(delegate (Type t)
             {
                 List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
-
-                //TODO: get author attribute if available
-                object[] authorAttributes = t.GetCustomAttributes(typeof(AuthorAttribute), true);
-                if (authorAttributes != null && authorAttributes.Length.Equals(1)) 
-                {
-                    AuthorAttribute authorAttribute = (AuthorAttribute)authorAttributes[0];
-                    throw new NotImplementedException();
-                }
-
-                throw new NotImplementedException();
-                //TODO: get name and version from filename
-
-
-                //***
-
                 //object[] arr = t.GetCustomAttributes(typeof(CalculationPlugInAttribute), true);
                 //return !(arr == null || arr.Length == 0) && interfaceTypes.Contains(typeof(IPlugin));
                 return interfaceTypes.Contains(typeof(IPlugin));  //20230210 no attribute used (yet)
             });
 
+            if (pluginList != null && pluginList.Count > 0)
+            {
+                result = new List<IPlugin>();
+                // get metadata
+                foreach (Type pluginType in pluginList)
+                {
+                    //TODO: get author attribute if available
+                    object[] authorAttributes = pluginType.GetCustomAttributes(typeof(AuthorAttribute), true);
+                    AuthorAttribute authorAttribute = null;
+                    if (authorAttributes != null && authorAttributes.Length.Equals(1))
+                    {
+                        authorAttribute = (AuthorAttribute)authorAttributes[0];
+                    }
+                    string assemblyFullname = pluginType.Assembly.FullName;
+                    string authorName;
+                    if (authorAttribute != null)
+                    {
+                        authorName = authorAttribute.Name;
+                    }
+                    else
+                    {
+                        authorName = "anonymous";
+                    }
+
+                    IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
+
+                    IPlugin resultPart = Activator.CreateInstance(pluginType) as IPlugin;
+                    resultPart.SetMetaData(metaData);
+
+                    result.Add(resultPart);
+                }
+            }
             // convert the list of Objects to an instantiated list of Plugins
-            result = pluginList.ConvertAll<IPlugin>(delegate (Type t) { return Activator.CreateInstance(t) as IPlugin; });  //todo. use different method for DI
+            //result = pluginList.ConvertAll<IPlugin>(delegate (Type t) { return Activator.CreateInstance(t) as IPlugin; });  //todo. use different method for DI
 
             return result;
         }

@@ -14,6 +14,8 @@ namespace PluginDemo.Interfaces
 
         #region Methods
 
+        void SetMetaData(IPluginMetaData Data);
+
         string SayHello();
 
         #endregion Methods

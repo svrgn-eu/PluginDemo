@@ -5,13 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PluginDemo.Attributes\PluginDemo.Attributes.csproj" />
-    <ProjectReference Include="..\PluginDemo.Helpers\PluginDemo.Helpers.csproj" />
+    <ProjectReference Include="..\PluginDemo.Implementations.Base\PluginDemo.Implementations.Base.csproj" />
     <ProjectReference Include="..\PluginDemo.Interfaces\PluginDemo.Interfaces.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Attributes\" />
   </ItemGroup>
 
 </Project>
