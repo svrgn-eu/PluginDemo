@@ -14,7 +14,7 @@ namespace PluginDemo.App
 
             foreach (IPluginHost pluginHost in hostProvider.Plugins)
             {
-                Console.WriteLine(pluginHost.Plugin.SayHello());
+                //Console.WriteLine(pluginHost.PluginType.SayHello());
             }
         }
     }

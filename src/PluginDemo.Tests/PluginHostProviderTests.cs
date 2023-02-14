@@ -22,9 +22,9 @@ namespace PluginDemo.Tests
             Assert.IsTrue(provider.Plugins.Count > 0);
             foreach (IPluginHost pluginHost in provider.Plugins)
             {
-                Assert.IsNotNull(pluginHost.Plugin);
-                Assert.IsNotNull(pluginHost.Plugin.MetaData);
-                Assert.IsNotNull(pluginHost.Plugin.MetaData.Identifier);
+                Assert.IsNotNull(pluginHost.PluginType);
+                Assert.IsNotNull(pluginHost.MetaData);
+                Assert.IsNotNull(pluginHost.MetaData.Identifier);
             }
         }
         #endregion Creation

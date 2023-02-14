@@ -9,15 +9,17 @@ namespace PluginDemo.Management
     {
         #region Properties
 
-        public IPlugin Plugin { get; private set; }
+        public Type PluginType { get; private set; }
+        public IPluginMetaData MetaData { get; private set; }
 
         #endregion Properties
 
         #region Construction
 
-        public PluginHost(IPlugin Plugin) 
+        public PluginHost(Type PluginType, IPluginMetaData MetaData) 
         { 
-            this.Plugin = Plugin;
+            this.PluginType = PluginType;
+            this.MetaData = MetaData;
         }
 
         #endregion Construction

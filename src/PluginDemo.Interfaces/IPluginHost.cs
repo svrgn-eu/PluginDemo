@@ -8,7 +8,8 @@ namespace PluginDemo.Interfaces
     {
         #region Properties
 
-        IPlugin Plugin { get; }
+        Type PluginType { get; }
+        IPluginMetaData MetaData { get; }
 
         #endregion Properties
 

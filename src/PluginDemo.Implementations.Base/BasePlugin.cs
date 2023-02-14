@@ -9,20 +9,11 @@ namespace PluginDemo.Implementations.Base
     {
         #region Properties
 
-        public IPluginMetaData MetaData { get; private set; }
-
         #endregion Properties
 
         #region Methods
 
         public abstract string SayHello();
-
-        #region SetMetaData
-        public void SetMetaData(IPluginMetaData Data)
-        {
-            this.MetaData = Data;
-        }
-        #endregion SetMetaData
 
         #endregion Methods
     }

@@ -47,13 +47,8 @@ namespace PluginDemo.Management
 
             this.LoadPlugInDependencies("PluginDemo.Implementations.Base.dll", "PluginDemo.Interfaces.dll", "PluginDemo.Attributes.dll");  //load two dependencies before being able to load the plugins themselves. TODO: specify more detailed and have a dedicated folder(?)
             List<Assembly> plugInAssemblies = this.LoadPlugInAssemblies();
-            List<IPlugin> plugIns = GetPlugins(plugInAssemblies);
-
-            foreach (IPlugin plugin in plugIns)
-            {
-                this.Plugins.Add(new PluginHost(plugin));
-            }
-
+            this.Plugins = GetPlugins(plugInAssemblies);
+            
             //TODO: load config (also save it somewhere)
         }
         #endregion Reload
@@ -96,15 +91,15 @@ namespace PluginDemo.Management
         }
         #endregion LoadPlugInAssemblies
 
-        #region GetPlugins: returns a list of IPlugin instances created from the types of the passed assemblies
+        #region GetPlugins: returns a list of IPlugin Types in the passed assemblies
         /// <summary>
-        /// returns a list of IPlugin instances created from the types of the passed assemblies
+        /// returns a list of IPlugin Types in the passed assemblies
         /// </summary>
         /// <param name="assemblies">the assemblies with IPlugin child Types</param>
-        /// <returns>a list of IPlugin instances</returns>
-        private List<IPlugin> GetPlugins(List<Assembly> assemblies)
+        /// <returns>a list of IPlugin Types</returns>
+        private List<IPluginHost> GetPlugins(List<Assembly> assemblies)
         {
-            List<IPlugin> result = default;
+            List<IPluginHost> result = default;
             List<Type> availableTypes = new List<Type>();
 
             foreach (Assembly currentAssembly in assemblies)
@@ -121,7 +116,7 @@ namespace PluginDemo.Management
 
             if (pluginList != null && pluginList.Count > 0)
             {
-                result = new List<IPlugin>();
+                result = new List<IPluginHost>();
                 //get metadata
                 foreach (Type pluginType in pluginList)
                 {
@@ -145,8 +140,9 @@ namespace PluginDemo.Management
 
                     IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
 
-                    IPlugin resultPart = Activator.CreateInstance(pluginType) as IPlugin;
-                    resultPart.SetMetaData(metaData);
+                    //IPlugin resultPart = Activator.CreateInstance(pluginType) as IPlugin;
+                    IPluginHost resultPart = new PluginHost(pluginType, metaData);
+                    //resultPart.SetMetaData(metaData);
 
                     result.Add(resultPart);
                 }
@@ -163,10 +159,10 @@ namespace PluginDemo.Management
 
             if (!this.Exists(InstanceName))
             {
-                IPluginHost source = this.Plugins.Where(x => x.Plugin.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
+                IPluginHost source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
                 if (source != null)
                 {
-                    IPlugin newInstance = Activator.CreateInstance(source.Plugin.GetType()) as IPlugin;  //TODO: make better
+                    IPlugin newInstance = Activator.CreateInstance(source.PluginType) as IPlugin;  //TODO: make better
                     this.Instances.Add(InstanceName, newInstance);
                     result = true;
                 }

@@ -8,13 +8,9 @@ namespace PluginDemo.Interfaces
     {
         #region Properties
 
-        IPluginMetaData MetaData { get; }
-
         #endregion Properties
 
         #region Methods
-
-        void SetMetaData(IPluginMetaData Data);
 
         string SayHello();
 
