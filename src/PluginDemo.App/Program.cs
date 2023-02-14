@@ -1,4 +1,5 @@
-﻿using PluginDemo.Interfaces;
+﻿using PluginDemo.Implementations.Base;
+using PluginDemo.Interfaces;
 using PluginDemo.Management;
 using System;
 
@@ -9,12 +10,15 @@ namespace PluginDemo.App
         static void Main(string[] args)
         {
             IPluginHostProvider hostProvider = new PluginHostProvider();
+            hostProvider.AddInstance("DemoPlugin1Instance1", new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0")));
+            hostProvider.AddInstance("DemoPlugin1Instance1-1", new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0")));
+            hostProvider.AddInstance("DemoPlugin1Instance2", new PluginIdentifier("PluginDemo.Implementations.DemoPlugin2", Version.Parse("0.1.0.0")));
             //TODO: use dependency injection
             //TODO: call hostProvider.Reload() when something has changed in the Plugin (sub)folders, file system watcher
 
-            foreach (IPluginHost pluginHost in hostProvider.Plugins)
+            foreach (IPlugin plugin in hostProvider.Instances.Values)
             {
-                //Console.WriteLine(pluginHost.PluginType.SayHello());
+                Console.WriteLine(plugin.SayHello());
             }
         }
     }
