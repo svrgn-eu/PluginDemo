@@ -4,6 +4,7 @@ using PluginDemo.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
@@ -18,6 +19,8 @@ namespace PluginDemo.Management
 
         public List<IPluginConfiguration> Configurations { get; private set; }
 
+        public Dictionary<string, IPlugin> Instances { get; private set; }
+
         #endregion Properties
 
         #region Construction
@@ -26,6 +29,7 @@ namespace PluginDemo.Management
         {
             this.Plugins = new List<IPluginHost>();
             this.Configurations = new List<IPluginConfiguration>();
+            this.Instances = new Dictionary<string, IPlugin>();
             this.Reload();
         }
 
@@ -49,6 +53,8 @@ namespace PluginDemo.Management
             {
                 this.Plugins.Add(new PluginHost(plugin));
             }
+
+            //TODO: load config (also save it somewhere)
         }
         #endregion Reload
 
@@ -149,6 +155,59 @@ namespace PluginDemo.Management
             return result;
         }
         #endregion GetPlugins
+
+        #region AddInstance
+        public bool AddInstance(string InstanceName, IPluginIdentifier Identifier)
+        {
+            bool result = false;
+
+            if (!this.Exists(InstanceName))
+            {
+                IPluginHost source = this.Plugins.Where(x => x.Plugin.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
+                if (source != null)
+                {
+                    IPlugin newInstance = Activator.CreateInstance(source.Plugin.GetType()) as IPlugin;  //TODO: make better
+                    this.Instances.Add(InstanceName, newInstance);
+                    result = true;
+                }
+                else
+                { 
+                    //TODO: error, plugin host not loaded
+                }
+            }
+            else 
+            { 
+                //TODO: error, instance is already existing
+            }
+
+            return result;
+        }
+        #endregion AddInstance
+
+        #region Exists
+        public bool Exists(string InstanceName)
+        {
+            bool result = false;
+
+            result = this.Instances.ContainsKey(InstanceName);
+
+            return result;
+        }
+        #endregion Exists
+
+        #region GetInstance
+        public IPlugin GetInstance(string InstanceName)
+        {
+            IPlugin result = default;
+
+            if (this.Exists(InstanceName))
+            {
+                result = this.Instances[InstanceName];
+            }
+
+            return result;
+        }
+        #endregion GetInstance
 
         #endregion Methods
     }

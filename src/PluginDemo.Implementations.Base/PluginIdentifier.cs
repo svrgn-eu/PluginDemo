@@ -24,5 +24,23 @@ namespace PluginDemo.Implementations.Base
         }
 
         #endregion Construction
+
+        #region Methods
+
+        #region Equals
+        public override bool Equals(object obj)
+        {
+            bool result = false;
+
+            if (obj is IPluginIdentifier) 
+            {
+                IPluginIdentifier comparedObject = (IPluginIdentifier)obj;
+                result = (this.Name.Equals(comparedObject.Name)) && (this.Version.Equals(comparedObject.Version));
+            }
+            return result;
+        }
+        #endregion Equals
+
+        #endregion Methods
     }
 }
