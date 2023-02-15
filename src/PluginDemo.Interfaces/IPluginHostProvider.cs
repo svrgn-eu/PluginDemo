@@ -8,7 +8,7 @@ namespace PluginDemo.Interfaces
     {
         #region Properties
 
-        List<IPluginHost> Plugins { get; }
+        List<IPluginTypeReference> Plugins { get; }
         List<IPluginConfiguration> Configurations { get; }
         Dictionary<string, IPlugin> Instances { get; }
 

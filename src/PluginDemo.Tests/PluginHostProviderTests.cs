@@ -20,7 +20,7 @@ namespace PluginDemo.Tests
 
             Assert.IsNotNull(provider);
             Assert.IsTrue(provider.Plugins.Count > 0);
-            foreach (IPluginHost pluginHost in provider.Plugins)
+            foreach (IPluginTypeReference pluginHost in provider.Plugins)
             {
                 Assert.IsNotNull(pluginHost.PluginType);
                 Assert.IsNotNull(pluginHost.MetaData);

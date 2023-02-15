@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PluginDemo.Management
 {
-    public class PluginHost : IPluginHost
+    public class PluginTypeReference : IPluginTypeReference
     {
         #region Properties
 
@@ -16,7 +16,7 @@ namespace PluginDemo.Management
 
         #region Construction
 
-        public PluginHost(Type PluginType, IPluginMetaData MetaData) 
+        public PluginTypeReference(Type PluginType, IPluginMetaData MetaData) 
         { 
             this.PluginType = PluginType;
             this.MetaData = MetaData;

@@ -15,7 +15,7 @@ namespace PluginDemo.Management
     {
         #region Properties
 
-        public List<IPluginHost> Plugins { get; private set; }
+        public List<IPluginTypeReference> Plugins { get; private set; }
 
         public List<IPluginConfiguration> Configurations { get; private set; }
 
@@ -27,7 +27,7 @@ namespace PluginDemo.Management
 
         public PluginHostProvider() 
         {
-            this.Plugins = new List<IPluginHost>();
+            this.Plugins = new List<IPluginTypeReference>();
             this.Configurations = new List<IPluginConfiguration>();
             this.Instances = new Dictionary<string, IPlugin>();
             this.Reload();
@@ -97,9 +97,9 @@ namespace PluginDemo.Management
         /// </summary>
         /// <param name="assemblies">the assemblies with IPlugin child Types</param>
         /// <returns>a list of IPlugin Types</returns>
-        private List<IPluginHost> GetPlugins(List<Assembly> assemblies)
+        private List<IPluginTypeReference> GetPlugins(List<Assembly> assemblies)
         {
-            List<IPluginHost> result = default;
+            List<IPluginTypeReference> result = default;
             List<Type> availableTypes = new List<Type>();
 
             foreach (Assembly currentAssembly in assemblies)
@@ -116,7 +116,7 @@ namespace PluginDemo.Management
 
             if (pluginList != null && pluginList.Count > 0)
             {
-                result = new List<IPluginHost>();
+                result = new List<IPluginTypeReference>();
                 //get metadata
                 foreach (Type pluginType in pluginList)
                 {
@@ -141,7 +141,7 @@ namespace PluginDemo.Management
                     IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
 
                     //IPlugin resultPart = Activator.CreateInstance(pluginType) as IPlugin;
-                    IPluginHost resultPart = new PluginHost(pluginType, metaData);
+                    IPluginTypeReference resultPart = new PluginTypeReference(pluginType, metaData);
                     //resultPart.SetMetaData(metaData);
 
                     result.Add(resultPart);
@@ -159,7 +159,7 @@ namespace PluginDemo.Management
 
             if (!this.Exists(InstanceName))
             {
-                IPluginHost source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
+                IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
                 if (source != null)
                 {
                     IPlugin newInstance = Activator.CreateInstance(source.PluginType) as IPlugin;  //TODO: make better
