@@ -65,5 +65,40 @@ namespace PluginDemo.Tests
             Assert.IsNotNull(instance);
         }
         #endregion GetInstance
+
+        #region AddPlugin
+        [TestMethod]
+        public void AddPlugin()
+        {
+            IPluginHostProvider provider = new PluginHostProvider();
+
+            string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
+            string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
+
+            if (File.Exists(destFilename))
+            {
+                //file is locked and cannot be deleted
+                File.Delete(destFilename);
+            }
+
+            int pluginTypesBefore = provider.Plugins.Count;
+
+            File.Copy(srcFilename, destFilename);
+            Thread.Sleep(500);
+            provider.Reload();
+            int pluginTypesAfterCopy = provider.Plugins.Count;
+            /*
+            File.Delete(destFilename);
+            Thread.Sleep(500);
+            provider.Reload();
+            int pluginTypesAfterDeletation = provider.Plugins.Count;
+            */
+            Assert.AreEqual(2, pluginTypesBefore);
+            Assert.AreEqual(3, pluginTypesAfterCopy);
+            //Assert.AreEqual(2, pluginTypesAfterDeletation);
+        }
+        #endregion AddPlugin
+
+        //TODO: what to do with plugins which are deleted while an active instance is created? Mark? - update: cannot be deleted as it is in access
     }
 }
