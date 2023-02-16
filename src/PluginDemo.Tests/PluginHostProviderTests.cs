@@ -1,4 +1,5 @@
-﻿using PluginDemo.Common.Windows;
+﻿using PluginDemo.Common.Implementations.Windows;
+using PluginDemo.Common.Interfaces.Windows;
 using PluginDemo.Implementations.Base;
 using PluginDemo.Interfaces;
 using PluginDemo.Management;
@@ -107,7 +108,8 @@ namespace PluginDemo.Tests
         public void AddPluginWithFileWatcher()
         {
             IPluginHostProvider provider = new PluginHostProvider();
-            IDirectoryChangedWatcherService watcher = new DirectoryChangedWatcherService("Plugins");
+            IDirectoryChangedWatcherService watcher = new DirectoryChangedWatcherService();
+            watcher.SetPath("Plugins");
             int lastNumberOfPlugins = 0;
             watcher.ContentChanged += (x, e) => { provider.Reload(); lastNumberOfPlugins = provider.Plugins.Count; };  //reload avalable plgins when something has changed, omit reloading later in the code
 

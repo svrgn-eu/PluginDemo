@@ -1,9 +1,9 @@
-﻿using PluginDemo.Common.Windows.Eventing;
+﻿using PluginDemo.Common.Interfaces.Windows.Eventing;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PluginDemo.Common.Windows
+namespace PluginDemo.Common.Interfaces.Windows
 {
     public interface IDirectoryChangedWatcherService
     {
@@ -15,7 +15,7 @@ namespace PluginDemo.Common.Windows
 
         #region Methods
 
-        //void SetPath(string Path, bool DoIncludeSubdirectories = true);  //TODO: see if this stays private, more effort needed (unhang events etc
+        void SetPath(string Path, bool DoIncludeSubdirectories = true);
 
         #endregion Methods
 

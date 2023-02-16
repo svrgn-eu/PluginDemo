@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace PluginDemo.Common.Windows.Eventing
+namespace PluginDemo.Common.Interfaces.Windows.Eventing
 {
     public class DirectoryChangedEventArgs : EventArgs
     {
@@ -20,7 +20,7 @@ namespace PluginDemo.Common.Windows.Eventing
         #region Construction
 
         public DirectoryChangedEventArgs(string FilenameBefore, string FilenameAfter, bool IsChanged, bool IsCreated, bool IsDeleted, bool IsRenamed)
-        { 
+        {
             this.FilenameBefore = FilenameBefore;
             this.FilenameAfter = FilenameAfter;
             this.IsChanged = IsChanged;

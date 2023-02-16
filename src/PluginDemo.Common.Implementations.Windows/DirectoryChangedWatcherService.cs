@@ -1,28 +1,34 @@
-﻿using PluginDemo.Common.Windows.Eventing;
+﻿using PluginDemo.Common.Interfaces.Windows;
+using PluginDemo.Common.Interfaces.Windows.Eventing;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace PluginDemo.Common.Windows
+namespace PluginDemo.Common.Implementations.Windows
 {
+    /// <summary>
+    /// File system watcher encapsulation. After Creation, you need to set the watched path with SetPath. It is recommended to have one instance of this class per watched directory.
+    /// </summary>
     public class DirectoryChangedWatcherService : IDirectoryChangedWatcherService
     {
         //TODO: move to common libs
         #region Properties
 
-        private FileSystemWatcher fileSystemWatcher;
+        private FileSystemWatcher fileSystemWatcher;  // the main protagonist of our class
+
+        private FileSystemEventHandler fileSystemEventHandlerChanged;  //event var to be able to unhang it
+        private RenamedEventHandler fileSystemEventHandlerRenamed;  //event var to be able to unhang it
 
         #endregion Properties
 
         #region Construction
 
-        public DirectoryChangedWatcherService(string Path)
-        { 
-            this.fileSystemWatcher = new FileSystemWatcher();
-            this.SetPath(Path);  //path needs to be set before the rest can happen
-            this.InitializeWatcher();
-            this.AddEvents();
+        public DirectoryChangedWatcherService()
+        {
+            fileSystemWatcher = new FileSystemWatcher();
+            InitializeWatcher();
+            CreateEventHandlers();
         }
 
         #endregion Construction
@@ -32,34 +38,55 @@ namespace PluginDemo.Common.Windows
         #region InitializeWatcher
         private void InitializeWatcher()
         {
-            this.fileSystemWatcher.NotifyFilter = NotifyFilters.Attributes |
+            fileSystemWatcher.NotifyFilter = NotifyFilters.Attributes |
                                                     NotifyFilters.CreationTime |
                                                     NotifyFilters.DirectoryName |
                                                     NotifyFilters.FileName |
                                                     NotifyFilters.LastAccess |
                                                     NotifyFilters.LastWrite |
                                                     NotifyFilters.Security |
-                                                    NotifyFilters.Size;  
-            this.fileSystemWatcher.Filter = "*.*";  // filter set to any
+                                                    NotifyFilters.Size;
+            fileSystemWatcher.Filter = "*.*";  // filter set to any
         }
         #endregion InitializeWatcher
+
+        #region CreateEventHandlers
+        private void CreateEventHandlers()
+        {
+            fileSystemEventHandlerChanged = new FileSystemEventHandler(OnChanged);
+            fileSystemEventHandlerRenamed = new RenamedEventHandler(OnRenamed);
+        }
+        #endregion CreateEventHandlers
 
         #region AddEvents
         private void AddEvents()
         {
-            this.fileSystemWatcher.Changed += new FileSystemEventHandler(this.OnChanged);
-            this.fileSystemWatcher.Created += new FileSystemEventHandler(this.OnChanged);
-            this.fileSystemWatcher.Deleted += new FileSystemEventHandler(this.OnChanged);
-            this.fileSystemWatcher.Renamed += new RenamedEventHandler(this.OnRenamed);
-            this.fileSystemWatcher.EnableRaisingEvents = true;
+            fileSystemWatcher.Changed += fileSystemEventHandlerChanged;
+            fileSystemWatcher.Created += fileSystemEventHandlerChanged;
+            fileSystemWatcher.Deleted += fileSystemEventHandlerChanged;
+            fileSystemWatcher.Renamed += fileSystemEventHandlerRenamed;
+            fileSystemWatcher.EnableRaisingEvents = true;
         }
         #endregion AddEvents
+
+        #region RemoveEvents
+        private void RemoveEvents()
+        {
+            fileSystemWatcher.EnableRaisingEvents = false;
+            fileSystemWatcher.Changed -= fileSystemEventHandlerChanged;
+            fileSystemWatcher.Created -= fileSystemEventHandlerChanged;
+            fileSystemWatcher.Deleted -= fileSystemEventHandlerChanged;
+            fileSystemWatcher.Renamed -= fileSystemEventHandlerRenamed;
+        }
+        #endregion RemoveEvents
 
         #region SetPath
         public void SetPath(string Path, bool DoIncludeSubdirectories = true)
         {
-            this.fileSystemWatcher.Path = Path;
-            this.fileSystemWatcher.IncludeSubdirectories = DoIncludeSubdirectories;
+            RemoveEvents();
+            fileSystemWatcher.Path = Path;
+            fileSystemWatcher.IncludeSubdirectories = DoIncludeSubdirectories;
+            AddEvents();
         }
         #endregion SetPath
 
@@ -96,7 +123,7 @@ namespace PluginDemo.Common.Windows
                     break;
             }
 
-            this.ContentChanged?.Invoke(this, new DirectoryChangedEventArgs(filenameBefore, filenameAfter, isChanged, isCreated, isDeleted, isRenamed));
+            ContentChanged?.Invoke(this, new DirectoryChangedEventArgs(filenameBefore, filenameAfter, isChanged, isCreated, isDeleted, isRenamed));
         }
         #endregion OnRenamed
 
@@ -108,7 +135,7 @@ namespace PluginDemo.Common.Windows
             bool isChanged = false;
             bool isCreated = false;
             bool isDeleted = false;
-            bool isRenamed = false; 
+            bool isRenamed = false;
             switch (e.ChangeType)
             {
                 case WatcherChangeTypes.All:
@@ -132,7 +159,7 @@ namespace PluginDemo.Common.Windows
                     break;
             }
 
-            this.ContentChanged?.Invoke(this, new DirectoryChangedEventArgs(filenameBefore, filenameAfter, isChanged, isCreated, isDeleted, isRenamed));
+            ContentChanged?.Invoke(this, new DirectoryChangedEventArgs(filenameBefore, filenameAfter, isChanged, isCreated, isDeleted, isRenamed));
         }
         #endregion OnChanged
 
