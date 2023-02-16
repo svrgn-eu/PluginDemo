@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PluginDemo.Common.Windows\PluginDemo.Common.Windows.csproj" />
     <ProjectReference Include="..\PluginDemo.Helpers.Serialization\PluginDemo.Helpers.Serialization.csproj" />
     <ProjectReference Include="..\PluginDemo.Implementations.Base\PluginDemo.Implementations.Base.csproj" />
     <ProjectReference Include="..\PluginDemo.Interfaces\PluginDemo.Interfaces.csproj" />
