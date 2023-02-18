@@ -11,11 +11,11 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void Serialize()
         {
-            IPluginConfiguration header = new PluginConfiguration("Instance1", new PluginIdentifier("SomeDemoPlugin", Version.Parse("0.9.0")));
+            IPluginConfiguration configuration = new PluginConfiguration("Instance1", new PluginIdentifier("SomeDemoPlugin", Version.Parse("0.9.0")));
             IPluginSetting setting = new PluginSetting("SomeSetting", 666);
-            header.AddSetting(setting);
+            configuration.AddSetting(setting);
 
-            string json = SerializerHelper.Serialize<IPluginConfiguration>(header);
+            string json = SerializerHelper.Serialize<IPluginConfiguration>(configuration);
 
             Assert.IsNotNull(json);
             Assert.IsFalse(string.IsNullOrWhiteSpace(json));
