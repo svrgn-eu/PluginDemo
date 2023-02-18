@@ -18,7 +18,7 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void Creation()
         {
-            IPluginHostProvider provider = new PluginProviderService();
+            IPluginProviderService provider = new PluginProviderService();
 
             Assert.IsNotNull(provider);
             Assert.IsTrue(provider.Plugins.Count > 0);
@@ -40,7 +40,7 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void AddInstance()
         {
-            IPluginHostProvider provider = new PluginProviderService();
+            IPluginProviderService provider = new PluginProviderService();
             IPluginIdentifier identifier = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0"));
             bool wasSuccessfullyAdded = provider.AddInstance("NewInstance01", identifier);
             bool doesInstanceExist = provider.Exists("NewInstance01");
@@ -55,7 +55,7 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void GetInstance()
         {
-            IPluginHostProvider provider = new PluginProviderService();
+            IPluginProviderService provider = new PluginProviderService();
             IPluginIdentifier identifier = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0"));
             bool wasSuccessfullyAdded = provider.AddInstance("NewInstance01", identifier);
             bool doesInstanceExist = provider.Exists("NewInstance01");
@@ -72,7 +72,7 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void AddPlugin()
         {
-            IPluginHostProvider provider = new PluginProviderService();
+            IPluginProviderService provider = new PluginProviderService();
 
             string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
             string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
@@ -107,7 +107,7 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void AddPluginWithFileWatcher()
         {
-            IPluginHostProvider provider = new PluginProviderService();
+            IPluginProviderService provider = new PluginProviderService();
             IDirectoryChangedWatcherService watcher = new DirectoryChangedWatcherService();
             watcher.SetPath("Plugins");
             int lastNumberOfPlugins = 0;

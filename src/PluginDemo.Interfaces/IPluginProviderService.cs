@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PluginDemo.Interfaces
 {
-    public interface IPluginHostProvider
+    public interface IPluginProviderService
     {
         #region Properties
 

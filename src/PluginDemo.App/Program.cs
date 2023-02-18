@@ -9,7 +9,7 @@ namespace PluginDemo.App
     {
         static void Main(string[] args)
         {
-            IPluginHostProvider hostProvider = new PluginProviderService();
+            IPluginProviderService hostProvider = new PluginProviderService();
             hostProvider.AddInstance("DemoPlugin1Instance1", new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0")));
             hostProvider.AddInstance("DemoPlugin1Instance1-1", new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0")));
             hostProvider.AddInstance("DemoPlugin1Instance2", new PluginIdentifier("PluginDemo.Implementations.DemoPlugin2", Version.Parse("0.1.0.0")));

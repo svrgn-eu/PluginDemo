@@ -11,7 +11,7 @@ using System.Text;
 
 namespace PluginDemo.Management
 {
-    public class PluginHostProvider : IPluginHostProvider
+    public class PluginProviderService : IPluginProviderService
     {
         #region Properties
 
@@ -25,7 +25,7 @@ namespace PluginDemo.Management
 
         #region Construction
 
-        public PluginHostProvider() 
+        public PluginProviderService() 
         {
             this.Plugins = new List<IPluginTypeReference>();
             this.Configurations = new List<IPluginConfiguration>();
