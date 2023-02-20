@@ -1,5 +1,6 @@
 ﻿using PluginDemo.Common.Implementations.Windows;
 using PluginDemo.Common.Interfaces.Windows;
+using PluginDemo.Helpers.Serialization;
 using PluginDemo.Implementations.Base;
 using PluginDemo.Interfaces;
 using PluginDemo.Management;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 namespace PluginDemo.Tests
 {
     [TestClass]
-    public class PluginHostProviderTests
+    public class PluginProviderServiceTests
     {
         #region Creation
         [TestMethod]
@@ -139,5 +140,49 @@ namespace PluginDemo.Tests
             //Assert.AreEqual(2, pluginTypesAfterDeletation);
         }
         #endregion AddPluginWithFileWatcher
+
+        #region ExportConfiguration
+        [TestMethod]
+        public void ExportConfiguration()
+        {
+            IPluginProviderService provider = new PluginProviderService();
+            IPluginIdentifier identifier01 = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0"));
+            IPluginIdentifier identifier02 = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin2", Version.Parse("0.1.0.0"));
+            bool wasSuccessfullyAdded01 = provider.AddInstance("NewInstance01", identifier01);
+            bool wasSuccessfullyAdded02 = provider.AddInstance("NewInstance02", identifier02);
+            bool doesInstance01Exist = provider.Exists("NewInstance01");
+            bool doesInstance02Exist = provider.Exists("NewInstance02");
+
+            List<IPluginConfiguration> exportedConfiguration = provider.Configurations;
+
+            string configurationJson = SerializerHelper.Serialize(exportedConfiguration);
+
+            Assert.IsNotNull(provider);
+            Assert.IsTrue(wasSuccessfullyAdded01);
+            Assert.IsTrue(wasSuccessfullyAdded02);
+            Assert.IsTrue(doesInstance01Exist);
+            Assert.IsTrue(doesInstance02Exist);
+            Assert.IsNotNull(configurationJson);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(configurationJson));
+        }
+        #endregion ExportConfiguration
+
+        #region LoadConfiguration
+        [DataTestMethod]
+        [DataRow("{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginConfiguration, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[{\"$type\":\"PluginDemo.Implementations.Base.PluginConfiguration, PluginDemo.Implementations.Base\",\"Settings\":{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginSetting, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[]},\"Identifier\":{\"$type\":\"PluginDemo.Implementations.Base.PluginIdentifier, PluginDemo.Implementations.Base\",\"Name\":\"PluginDemo.Implementations.DemoPlugin1\",\"Version\":\"0.1.0.0\"},\"InstanceName\":\"NewInstance01\"},{\"$type\":\"PluginDemo.Implementations.Base.PluginConfiguration, PluginDemo.Implementations.Base\",\"Settings\":{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginSetting, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[]},\"Identifier\":{\"$type\":\"PluginDemo.Implementations.Base.PluginIdentifier, PluginDemo.Implementations.Base\",\"Name\":\"PluginDemo.Implementations.DemoPlugin2\",\"Version\":\"0.1.0.0\"},\"InstanceName\":\"NewInstance02\"}]}")]
+        public void LoadConfiguration(string ConfigJson)
+        {
+            IPluginProviderService provider = new PluginProviderService();
+            List < IPluginConfiguration> configurations = SerializerHelper.Deserialize<List<IPluginConfiguration>>(ConfigJson);    
+            provider.SetConfiguration(configurations);
+
+            throw new NotImplementedException();
+
+            //TODO: check number of instances
+            // check if instances have been thrown away -> extra test
+            //TODO: add settings to serialized stuff
+
+        }
+        #endregion LoadConfiguration
     }
 }

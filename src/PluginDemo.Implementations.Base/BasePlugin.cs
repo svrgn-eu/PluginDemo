@@ -11,6 +11,15 @@ namespace PluginDemo.Implementations.Base
 
         #endregion Properties
 
+        #region Construction
+
+        public BasePlugin(List<IPluginSetting> Settings) 
+        {
+            var x = Settings;
+        }
+
+        #endregion Construction
+
         #region Methods
 
         public abstract string SayHello();

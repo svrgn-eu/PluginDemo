@@ -17,9 +17,10 @@ namespace PluginDemo.Interfaces
         #region Methods
 
         void Reload();
-        bool AddInstance(string InstanceName, IPluginIdentifier Identifier);
+        bool AddInstance(string InstanceName, IPluginIdentifier Identifier, List<IPluginSetting> Settings = null);
         bool Exists(string InstanceName);
         IPlugin GetInstance(string InstanceName);
+        void SetConfiguration(List<IPluginConfiguration> Configurations);
 
         #endregion Methods
     }

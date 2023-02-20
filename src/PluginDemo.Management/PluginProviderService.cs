@@ -1,5 +1,6 @@
 ﻿using PluginDemo.Attributes;
 using PluginDemo.Helpers;
+using PluginDemo.Implementations.Base;
 using PluginDemo.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -153,7 +154,7 @@ namespace PluginDemo.Management
         #endregion GetPlugins
 
         #region AddInstance
-        public bool AddInstance(string InstanceName, IPluginIdentifier Identifier)
+        public bool AddInstance(string InstanceName, IPluginIdentifier Identifier, List<IPluginSetting> Settings = null)
         {
             bool result = false;
 
@@ -162,8 +163,9 @@ namespace PluginDemo.Management
                 IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
                 if (source != null)
                 {
-                    IPlugin newInstance = Activator.CreateInstance(source.PluginType) as IPlugin;  //TODO: make better
+                    IPlugin newInstance = Activator.CreateInstance(source.PluginType, Settings) as IPlugin;  //TODO: make better
                     this.Instances.Add(InstanceName, newInstance);
+                    this.AddConfiguration(Identifier, InstanceName, Settings);
                     result = true;
                 }
                 else
@@ -179,6 +181,21 @@ namespace PluginDemo.Management
             return result;
         }
         #endregion AddInstance
+
+        #region AddConfiguration
+        private void AddConfiguration(IPluginIdentifier Identifier, string InstanceName, List<IPluginSetting> Settings)
+        {
+            IPluginConfiguration newConfig = new PluginConfiguration(InstanceName, Identifier);  //TODO: use DI
+            if (Settings != null)
+            {
+                foreach (IPluginSetting setting in Settings)
+                {
+                    newConfig.AddSetting(setting);
+                }
+            }
+            this.Configurations.Add(newConfig);
+        }
+        #endregion AddConfiguration
 
         #region Exists
         public bool Exists(string InstanceName)
@@ -204,6 +221,16 @@ namespace PluginDemo.Management
             return result;
         }
         #endregion GetInstance
+
+        #region SetConfiguration
+        public void SetConfiguration(List<IPluginConfiguration> Configurations)
+        {
+            //TODO: replace config
+            //throw away old instances
+            // create new ones
+            throw new NotImplementedException();
+        }
+        #endregion SetConfiguration
 
         #endregion Methods
     }
