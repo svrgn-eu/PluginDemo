@@ -222,13 +222,45 @@ namespace PluginDemo.Management
         }
         #endregion GetInstance
 
-        #region SetConfiguration
+        #region SetConfiguration: replaces the current configuration by the given one. Any instance of a Plugin will be discarded as consistency cannot be ensured.
+        /// <summary>
+        /// replaces the current configuration by the given one. Any instance of a Plugin will be discarded as consistency cannot be ensured.
+        /// </summary>
+        /// <param name="Configurations"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void SetConfiguration(List<IPluginConfiguration> Configurations)
         {
-            //TODO: replace config
-            //throw away old instances
+            //replace config
+            this.Configurations.Clear();
+
+            // throw away old instances
+            this.Instances.Clear();
+
             // create new ones
-            throw new NotImplementedException();
+            if (Configurations != null)
+            {
+                foreach (IPluginConfiguration config in Configurations)
+                {
+                    if (this.Plugins.Any(x => x.MetaData.Identifier.Equals(config.Identifier)))
+                    {
+                        IPluginTypeReference pluginTypeReference = this.Plugins.Where(x => x.MetaData.Identifier.Equals(config.Identifier)).FirstOrDefault();
+                        if (pluginTypeReference != null)
+                        {
+                            IPlugin newInstance = Activator.CreateInstance(pluginTypeReference.PluginType, config.Settings) as IPlugin;  //TODO: make better
+                            this.Instances.Add(config.InstanceName, newInstance);
+                            this.Configurations.Add(config);
+                        }
+                    }
+                    else
+                    { 
+                        //TODO: error handling: config is for a plugin which is not loaded / available
+                    }
+                }
+            }
+            else
+            { 
+                //TODO: notification that no configs have been given
+            }
         }
         #endregion SetConfiguration
 

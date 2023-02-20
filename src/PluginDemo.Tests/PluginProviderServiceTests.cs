@@ -181,12 +181,8 @@ namespace PluginDemo.Tests
             List <IPluginConfiguration> configurations = SerializerHelper.Deserialize<List<IPluginConfiguration>>(ConfigJson);    
             provider.SetConfiguration(configurations);
 
-            throw new NotImplementedException();
-
-            //TODO: check number of instances
-            // check if instances have been thrown away -> extra test
-            //TODO: add settings to serialized stuff
-
+            Assert.IsNotNull(provider);
+            Assert.AreNotEqual(0, provider.Instances.Count);
         }
         #endregion LoadConfiguration
     }
