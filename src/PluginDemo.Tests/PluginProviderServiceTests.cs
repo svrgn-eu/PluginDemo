@@ -148,10 +148,14 @@ namespace PluginDemo.Tests
             IPluginProviderService provider = new PluginProviderService();
             IPluginIdentifier identifier01 = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0"));
             IPluginIdentifier identifier02 = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin2", Version.Parse("0.1.0.0"));
-            bool wasSuccessfullyAdded01 = provider.AddInstance("NewInstance01", identifier01);
+            IPluginSetting setting01 = new PluginSetting("SomeSetting", 666);
+            IPluginSetting setting02 = new PluginSetting("SomeOtherSetting", "String Text");
+
+            bool wasSuccessfullyAdded01 = provider.AddInstance("NewInstance01", identifier01, new List<IPluginSetting>() { setting01, setting02 });
             bool wasSuccessfullyAdded02 = provider.AddInstance("NewInstance02", identifier02);
             bool doesInstance01Exist = provider.Exists("NewInstance01");
             bool doesInstance02Exist = provider.Exists("NewInstance02");
+
 
             List<IPluginConfiguration> exportedConfiguration = provider.Configurations;
 
@@ -170,10 +174,11 @@ namespace PluginDemo.Tests
         #region LoadConfiguration
         [DataTestMethod]
         [DataRow("{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginConfiguration, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[{\"$type\":\"PluginDemo.Implementations.Base.PluginConfiguration, PluginDemo.Implementations.Base\",\"Settings\":{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginSetting, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[]},\"Identifier\":{\"$type\":\"PluginDemo.Implementations.Base.PluginIdentifier, PluginDemo.Implementations.Base\",\"Name\":\"PluginDemo.Implementations.DemoPlugin1\",\"Version\":\"0.1.0.0\"},\"InstanceName\":\"NewInstance01\"},{\"$type\":\"PluginDemo.Implementations.Base.PluginConfiguration, PluginDemo.Implementations.Base\",\"Settings\":{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginSetting, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[]},\"Identifier\":{\"$type\":\"PluginDemo.Implementations.Base.PluginIdentifier, PluginDemo.Implementations.Base\",\"Name\":\"PluginDemo.Implementations.DemoPlugin2\",\"Version\":\"0.1.0.0\"},\"InstanceName\":\"NewInstance02\"}]}")]
+        [DataRow("{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginConfiguration, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[{\"$type\":\"PluginDemo.Implementations.Base.PluginConfiguration, PluginDemo.Implementations.Base\",\"Settings\":{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginSetting, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[{\"$type\":\"PluginDemo.Implementations.Base.PluginSetting, PluginDemo.Implementations.Base\",\"Name\":\"SomeSetting\",\"Type\":\"System.Int32, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e\",\"Value\":666},{\"$type\":\"PluginDemo.Implementations.Base.PluginSetting, PluginDemo.Implementations.Base\",\"Name\":\"SomeOtherSetting\",\"Type\":\"System.String, System.Private.CoreLib, Version=7.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e\",\"Value\":\"String Text\"}]},\"Identifier\":{\"$type\":\"PluginDemo.Implementations.Base.PluginIdentifier, PluginDemo.Implementations.Base\",\"Name\":\"PluginDemo.Implementations.DemoPlugin1\",\"Version\":\"0.1.0.0\"},\"InstanceName\":\"NewInstance01\"},{\"$type\":\"PluginDemo.Implementations.Base.PluginConfiguration, PluginDemo.Implementations.Base\",\"Settings\":{\"$type\":\"System.Collections.Generic.List`1[[PluginDemo.Interfaces.IPluginSetting, PluginDemo.Interfaces]], System.Private.CoreLib\",\"$values\":[]},\"Identifier\":{\"$type\":\"PluginDemo.Implementations.Base.PluginIdentifier, PluginDemo.Implementations.Base\",\"Name\":\"PluginDemo.Implementations.DemoPlugin2\",\"Version\":\"0.1.0.0\"},\"InstanceName\":\"NewInstance02\"}]}")]
         public void LoadConfiguration(string ConfigJson)
         {
             IPluginProviderService provider = new PluginProviderService();
-            List < IPluginConfiguration> configurations = SerializerHelper.Deserialize<List<IPluginConfiguration>>(ConfigJson);    
+            List <IPluginConfiguration> configurations = SerializerHelper.Deserialize<List<IPluginConfiguration>>(ConfigJson);    
             provider.SetConfiguration(configurations);
 
             throw new NotImplementedException();
