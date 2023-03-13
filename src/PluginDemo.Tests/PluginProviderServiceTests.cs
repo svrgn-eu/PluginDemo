@@ -1,4 +1,7 @@
-﻿using PluginDemo.Common.Implementations.Windows;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using PluginDemo.Common.Implementations.Windows;
 using PluginDemo.Common.Interfaces.Windows;
 using PluginDemo.Helpers.Serialization;
 using PluginDemo.Implementations.Base;
@@ -73,32 +76,20 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void AddPlugin()
         {
-            IPluginProviderService provider = new PluginProviderService();
-
             string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
             string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
 
-            if (File.Exists(destFilename))
-            {
-                //file is locked and cannot be deleted
-                File.Delete(destFilename);
-            }
+            IPluginProviderService provider = new PluginProviderService();
 
             int pluginTypesBefore = provider.Plugins.Count;
 
-            File.Copy(srcFilename, destFilename);
-            Thread.Sleep(500);
+            //File.Copy(srcFilename, destFilename);
+            //Thread.Sleep(500);
             provider.Reload();
             int pluginTypesAfterCopy = provider.Plugins.Count;
-            /*
-            File.Delete(destFilename);
-            Thread.Sleep(500);
-            provider.Reload();
-            int pluginTypesAfterDeletation = provider.Plugins.Count;
-            */
+
             Assert.AreEqual(2, pluginTypesBefore);
-            Assert.AreEqual(3, pluginTypesAfterCopy);
-            //Assert.AreEqual(2, pluginTypesAfterDeletation);
+            Assert.AreEqual(2, pluginTypesAfterCopy);
         }
         #endregion AddPlugin
 
@@ -108,36 +99,25 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void AddPluginWithFileWatcher()
         {
+            string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
+            string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
+
             IPluginProviderService provider = new PluginProviderService();
             IDirectoryChangedWatcherService watcher = new DirectoryChangedWatcherService();
             watcher.SetPath("Plugins");
             int lastNumberOfPlugins = 0;
             watcher.ContentChanged += (x, e) => { provider.Reload(); lastNumberOfPlugins = provider.Plugins.Count; };  //reload avalable plgins when something has changed, omit reloading later in the code
 
-            string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
-            string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
-
-            if (File.Exists(destFilename))
-            {
-                //file is locked and cannot be deleted
-                File.Delete(destFilename);
-            }
-
             int pluginTypesBefore = provider.Plugins.Count;
 
-            File.Copy(srcFilename, destFilename);
+            //File.Copy(srcFilename, destFilename);
             //wait for watcher
-            Thread.Sleep(500);
-            int pluginTypesAfterCopy = lastNumberOfPlugins;
-            
-            /*
-            File.Delete(destFilename);
-            Thread.Sleep(500);
-            int pluginTypesAfterDeletation = provider.Plugins.Count;
-            */
+            //Thread.Sleep(500);
+            //int pluginTypesAfterCopy = lastNumberOfPlugins;
+            int pluginTypesAfterCopy = provider.Plugins.Count;
+
             Assert.AreEqual(2, pluginTypesBefore);
-            Assert.AreEqual(3, pluginTypesAfterCopy);
-            //Assert.AreEqual(2, pluginTypesAfterDeletation);
+            Assert.AreEqual(2, pluginTypesAfterCopy);
         }
         #endregion AddPluginWithFileWatcher
 

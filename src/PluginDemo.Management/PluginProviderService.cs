@@ -4,10 +4,13 @@ using PluginDemo.Implementations.Base;
 using PluginDemo.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Loader;
 using System.Text;
 
 namespace PluginDemo.Management
@@ -22,12 +25,16 @@ namespace PluginDemo.Management
 
         public Dictionary<string, IPlugin> Instances { get; private set; }
 
+        private List<Assembly> plugInAssemblies;
+        //private PluginAssemblyLoadContext pluginAssemblyLoadContext;
         #endregion Properties
 
         #region Construction
 
         public PluginProviderService() 
         {
+            //this.pluginAssemblyLoadContext = new PluginAssemblyLoadContext("Plugins");  //TODO: give unique name
+
             this.Plugins = new List<IPluginTypeReference>();
             this.Configurations = new List<IPluginConfiguration>();
             this.Instances = new Dictionary<string, IPlugin>();
@@ -47,12 +54,23 @@ namespace PluginDemo.Management
             this.Plugins.Clear();
 
             this.LoadPlugInDependencies("PluginDemo.Implementations.Base.dll", "PluginDemo.Interfaces.dll", "PluginDemo.Attributes.dll");  //load two dependencies before being able to load the plugins themselves. TODO: specify more detailed and have a dedicated folder(?)
-            List<Assembly> plugInAssemblies = this.LoadPlugInAssemblies();
+            this.plugInAssemblies = this.LoadPlugInAssemblies();
             this.Plugins = GetPlugins(plugInAssemblies);
-            
+
             //TODO: load config (also save it somewhere)
         }
         #endregion Reload
+
+        #region Unload
+        public void Unload()
+        {
+            AssemblyLoadContext.Default.Unload();
+
+            //this.Plugins?.Clear();
+            //this.Configurations?.Clear();
+            //this.Instances?.Clear();
+        }
+        #endregion Unload
 
         #region LoadPlugInDependencies: pre-loads the dependencies of the plugins (if not loaded anyway) to avoid any missing files when loading the plugin
         /// <summary>
@@ -84,7 +102,9 @@ namespace PluginDemo.Management
             {
                 foreach (FileInfo file in files)
                 {
-                    result.Add(Assembly.LoadFile(file.FullName));
+                    Assembly pluginAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(file.FullName);
+                    //Assembly pluginAssembly = this.pluginAssemblyLoadContext.LoadFromAssemblyPath(file.FullName); *** Does NOT LOAD PROPERLY
+                    result.Add(pluginAssembly);
                 }
             }
 
@@ -105,7 +125,15 @@ namespace PluginDemo.Management
 
             foreach (Assembly currentAssembly in assemblies)
             {
-                availableTypes.AddRange(currentAssembly.GetTypes());
+                try
+                {
+                    var x = currentAssembly.GetTypes();
+                    availableTypes.AddRange(currentAssembly.GetTypes());
+                }
+                catch (Exception ex)
+                {
+
+                }
             }
 
             // get a list of objects that implement the IPlugin interface

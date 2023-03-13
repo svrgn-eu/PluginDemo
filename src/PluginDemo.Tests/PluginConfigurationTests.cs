@@ -1,4 +1,7 @@
-﻿using PluginDemo.Helpers.Serialization;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using PluginDemo.Helpers.Serialization;
 using PluginDemo.Implementations.Base;
 using PluginDemo.Interfaces;
 
