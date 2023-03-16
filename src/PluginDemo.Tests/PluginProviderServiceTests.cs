@@ -76,9 +76,6 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void AddPlugin()
         {
-            string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
-            string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
-
             IPluginProviderService provider = new PluginProviderService();
 
             int pluginTypesBefore = provider.Plugins.Count;

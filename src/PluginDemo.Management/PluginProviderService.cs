@@ -114,10 +114,15 @@ namespace PluginDemo.Management
         }
         #endregion CreateLoadContexts
 
-        #region ScanForCorrectPluginAssemlyNames
+        #region ScanForCorrectPluginAssemlyNames: scan all DLLs and see, which types they do export. If it matches to what we are looking for, then load it
+        /// <summary>
+        /// scan all DLLs and see, which types they do export. If it matches to what we are looking for, then load it
+        /// </summary>
+        /// <param name="contexts">a list of PluginContextIngo objects to use</param>
+        /// <returns>true, when the contexts where not null</returns>
         private bool ScanForCorrectPluginAssemlyNames(List<PluginContextInfo> contexts)
         {
-            //TODO: scan all DLLs and see, which types they do export. If it matches to what we are looking for, then load it
+            //scan all DLLs and see, which types they do export. If it matches to what we are looking for, then load it
             bool result = false;
 
             string interfaceName = "IPlugin";  //TODO: set centrally / build reference for different INterface Types for different types of plugins
@@ -137,6 +142,14 @@ namespace PluginDemo.Management
                             Type[] types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.Name == interfaceName)).ToArray();
                             if (types != null && types.Length.Equals(1))
                             {
+                                //TODO: do not use the base assembly!
+
+                                //workaround
+                                if (assembly.FullName.ToLower().Contains("base"))
+                                {
+                                    continue;  
+                                }
+
                                 //TODO: set this in the context object
                                 context.SetAssemblyName(assembly.GetName());
 
