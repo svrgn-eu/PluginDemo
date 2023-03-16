@@ -9,13 +9,15 @@ namespace PluginDemo.Implementations.Base
     {
         #region Properties
 
+        List<IPluginSetting> settings;
+
         #endregion Properties
 
         #region Construction
 
         public BasePlugin(List<IPluginSetting> Settings) 
         {
-            var x = Settings;
+            this.settings = Settings;
         }
 
         #endregion Construction
