@@ -129,12 +129,11 @@ namespace PluginDemo.Management
                 {
                     string[] dllFiles = Directory.GetFiles(context.Path, "*.dll");
 
-
                     if (dllFiles != null && dllFiles.Length > 0)
                     {
                         foreach (string potentialPlugin in dllFiles)
                         {
-                            Assembly assembly = Assembly.LoadFrom(potentialPlugin);  //TODO: potentially peek into this in the context?
+                            Assembly assembly = context.Context.LoadFromAssemblyPath(potentialPlugin);
                             Type[] types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.Name == interfaceName)).ToArray();
                             if (types != null && types.Length.Equals(1))
                             {
@@ -203,7 +202,7 @@ namespace PluginDemo.Management
                 }
                 catch (Exception ex)
                 {
-
+                    //TODO: error
                 }
             }
 
