@@ -46,7 +46,7 @@ namespace PluginDemo.Tests
         {
             IPluginProviderService provider = new PluginProviderService();
             IPluginIdentifier identifier = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0"));
-            bool wasSuccessfullyAdded = provider.AddInstance("NewInstance01", identifier);
+            bool wasSuccessfullyAdded = provider.AddInstance("NewInstance01", identifier, new List<IPluginSetting>() { new PluginSetting("", "")});
             bool doesInstanceExist = provider.Exists("NewInstance01");
 
             Assert.IsNotNull(provider);

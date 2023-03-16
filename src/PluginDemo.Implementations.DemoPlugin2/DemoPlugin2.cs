@@ -19,7 +19,7 @@ namespace PluginDemo.Implementations.DemoPlugin2
         public DemoPlugin2(List<IPluginSetting> Settings)
             : base(Settings)
         {
-            var x = Settings;
+
         }
 
         #endregion Construction

@@ -19,7 +19,7 @@ namespace PluginDemo.Implementations.DemoPlugin1
         public DemoPlugin1(List<IPluginSetting> Settings)
             :base(Settings)
         {
-            var x = Settings;
+
         }
 
         #endregion Construction

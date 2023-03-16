@@ -5,6 +5,7 @@ using PluginDemo.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -274,7 +275,10 @@ namespace PluginDemo.Management
                 IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
                 if (source != null)
                 {
-                    IPlugin newInstance = Activator.CreateInstance(source.PluginType, Settings) as IPlugin;  //TODO: make better
+                    object[] parameters = new object[] { Settings };
+                    var x = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null);
+                    IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
+                    //IPlugin newInstance = Activator.CreateInstance(source.PluginType, parameters) as IPlugin;  //TODO: make better
                     this.Instances.Add(InstanceName, newInstance);
                     this.AddConfiguration(Identifier, InstanceName, Settings);
                     result = true;
