@@ -10,14 +10,16 @@ namespace PluginDemo.Management
     {
         #region Properties
 
+        private AssemblyDependencyResolver resolver;
+
         #endregion Properties
 
         #region Construction
 
-        public PluginAssemblyLoadContext(string Name)
+        public PluginAssemblyLoadContext(string Name, string PluginPath)
             : base(Name, true)
         { 
-        
+            this.resolver = new AssemblyDependencyResolver(PluginPath);
         }
 
         #endregion Construction
@@ -27,9 +29,30 @@ namespace PluginDemo.Management
         #region Load
         protected override Assembly Load(AssemblyName assemblyName)
         {
-            return LoadFromAssemblyName(assemblyName);
+            Assembly result = default;
+
+            string assemblyPath = this.resolver.ResolveAssemblyToPath(assemblyName);
+            if (assemblyPath != null)
+            {
+                result = LoadFromAssemblyPath(assemblyPath);
+            }
+
+            return result;
         }
         #endregion Load
+
+        #region LoadUnmanagedDll
+        protected override IntPtr LoadUnmanagedDll(string unmanagedDllName)
+        {
+            string libraryPath = this.resolver.ResolveUnmanagedDllToPath(unmanagedDllName);
+            if (libraryPath != null)
+            {
+                return LoadUnmanagedDllFromPath(libraryPath);
+            }
+
+            return IntPtr.Zero;
+        }
+        #endregion LoadUnmanagedDll
 
         #endregion Methods
     }

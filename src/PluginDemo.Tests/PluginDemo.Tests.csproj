@@ -24,13 +24,43 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Attributes.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.Base.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Interfaces.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AdditionalPlugins\PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin1-0.1.0.dll">
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Attributes.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin2-0.1.0.dll">
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.Base.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.DemoPlugin1-0.1.0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Interfaces.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Attributes.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.Base.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.DemoPlugin2-0.1.0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Interfaces.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
