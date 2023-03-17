@@ -357,7 +357,8 @@ namespace PluginDemo.Management
                         IPluginTypeReference pluginTypeReference = this.Plugins.Where(x => x.MetaData.Identifier.Equals(config.Identifier)).FirstOrDefault();
                         if (pluginTypeReference != null)
                         {
-                            IPlugin newInstance = Activator.CreateInstance(pluginTypeReference.PluginType, config.Settings) as IPlugin;  //TODO: make better
+                            IPlugin newInstance = Activator.CreateInstance(pluginTypeReference.PluginType) as IPlugin;  //TODO: make better
+                            newInstance.Initialize(config.Settings);
                             this.Instances.Add(config.InstanceName, newInstance);
                             this.Configurations.Add(config);
                         }
