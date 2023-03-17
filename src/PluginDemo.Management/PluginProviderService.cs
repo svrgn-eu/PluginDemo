@@ -34,7 +34,6 @@ namespace PluginDemo.Management
         public PluginProviderService() 
         {
             this.pluginContextInfos = new List<PluginContextInfo>();
-
             this.Plugins = new List<IPluginTypeReference>();
             this.Configurations = new List<IPluginConfiguration>();
             this.Instances = new Dictionary<string, IPlugin>();
@@ -65,11 +64,16 @@ namespace PluginDemo.Management
         #region Unload
         public void Unload()
         {
-            AssemblyLoadContext.Default.Unload();
+            //unload all contexts
+            foreach (PluginContextInfo pluginContextInfo in this.pluginContextInfos)
+            {
+                pluginContextInfo.Context.Unload();
+            }
 
-            //this.Plugins?.Clear();
-            //this.Configurations?.Clear();
-            //this.Instances?.Clear();
+            // clear all instance variables
+            this.Plugins?.Clear();
+            this.Configurations?.Clear();
+            this.Instances?.Clear();
         }
         #endregion Unload
 
