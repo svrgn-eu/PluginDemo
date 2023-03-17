@@ -22,12 +22,6 @@ namespace PluginDemo.Implementations.DemoPlugin2
 
         }
 
-        public DemoPlugin2(List<IPluginSetting> Settings)
-            : base(Settings)
-        {
-
-        }
-
         #endregion Construction
 
         #region Methods

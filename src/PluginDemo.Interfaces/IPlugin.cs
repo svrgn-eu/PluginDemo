@@ -12,6 +12,8 @@ namespace PluginDemo.Interfaces
 
         #region Methods
 
+        void Initialize(List<IPluginSetting> Settings);
+
         string SayHello();
 
         #endregion Methods

@@ -17,17 +17,19 @@ namespace PluginDemo.Implementations.Base
 
         public BasePlugin()
         {
-            this.settings = null;
-        }
-
-        public BasePlugin(List<IPluginSetting> Settings) 
-        {
-            this.settings = Settings;
+            
         }
 
         #endregion Construction
 
         #region Methods
+
+        #region Initialize
+        public virtual void Initialize(List<IPluginSetting> Settings)
+        {
+            this.settings = Settings;
+        }
+        #endregion Initialize
 
         public abstract string SayHello();
 
