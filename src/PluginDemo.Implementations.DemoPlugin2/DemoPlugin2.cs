@@ -16,6 +16,12 @@ namespace PluginDemo.Implementations.DemoPlugin2
 
         #region Construction
 
+        public DemoPlugin2()
+            : base()
+        {
+
+        }
+
         public DemoPlugin2(List<IPluginSetting> Settings)
             : base(Settings)
         {

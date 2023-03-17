@@ -271,7 +271,8 @@ namespace PluginDemo.Management
                 IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
                 if (source != null)
                 {
-                    object[] parameters = new object[] { Settings };
+                    //object[] parameters = new object[] { Settings };
+                    object[] parameters = null;
                     var x = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null);
                     IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
                     //IPlugin newInstance = Activator.CreateInstance(source.PluginType, parameters) as IPlugin;  //TODO: make better
