@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PluginDemo.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -13,8 +14,10 @@ namespace PluginDemo.Management
 
         public PluginAssemblyLoadContext Context { get; }
         public string Path { get; }
+        public Assembly Assembly { get; private set; }
 
         public AssemblyName AssemblyName { get; private set; }
+        public Type PluginType { get; private set; }
 
         #endregion Properties
 
@@ -36,6 +39,20 @@ namespace PluginDemo.Management
             this.AssemblyName = NewValue;
         }
         #endregion SetAssemblyName
+
+        #region SetAssembly
+        public void SetAssembly(Assembly NewValue)
+        {
+            this.Assembly = NewValue;
+        }
+        #endregion SetAssembly
+
+        #region SetPluginType
+        public void SetPluginType(Type NewValue)
+        { 
+            this.PluginType = NewValue;
+        }
+        #endregion SetPluginType
 
         #endregion Methods
     }

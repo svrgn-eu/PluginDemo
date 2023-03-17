@@ -26,7 +26,6 @@ namespace PluginDemo.Management
 
         public Dictionary<string, IPlugin> Instances { get; private set; }
 
-        private List<Assembly> plugInAssemblies;
         private List<PluginContextInfo> pluginContextInfos;
         #endregion Properties
 
@@ -56,8 +55,8 @@ namespace PluginDemo.Management
 
             this.pluginContextInfos = this.CreateLoadContexts();
             this.ScanForCorrectPluginAssemlyNames(this.pluginContextInfos);
-            this.plugInAssemblies = this.LoadPlugInAssemblies(this.pluginContextInfos);
-            this.Plugins = GetPlugins(plugInAssemblies);
+            this.LoadPlugInAssemblies(this.pluginContextInfos);
+            this.Plugins = this.GetPlugins(this.pluginContextInfos);
 
             //TODO: load config (also save it somewhere)
         }
@@ -173,10 +172,8 @@ namespace PluginDemo.Management
         #endregion ScanForCorrectPluginAssemlyNames
 
         #region LoadPlugInAssemblies
-        private List<Assembly> LoadPlugInAssemblies(List<PluginContextInfo> contexts)
+        private void LoadPlugInAssemblies(List<PluginContextInfo> contexts)
         {
-            List<Assembly> result = new List<Assembly>();
-
             if (contexts != null)
             {
                 foreach (PluginContextInfo context in contexts)
@@ -184,7 +181,8 @@ namespace PluginDemo.Management
                     if (context.AssemblyName != null)
                     {
                         Assembly pluginAssembly = context.Context.LoadFromAssemblyName(context.AssemblyName);
-                        result.Add(pluginAssembly);
+                        context.SetAssembly(pluginAssembly);
+                        context.SetPluginType(pluginAssembly.GetExportedTypes()[0]);  //TODO: think more, make more robust, select only implementors of IPlugin
                     }
                     else
                     { 
@@ -192,8 +190,6 @@ namespace PluginDemo.Management
                     }
                 }
             }
-
-            return result;
         }
         #endregion LoadPlugInAssemblies
 
@@ -201,18 +197,18 @@ namespace PluginDemo.Management
         /// <summary>
         /// returns a list of IPlugin Types in the passed assemblies
         /// </summary>
-        /// <param name="assemblies">the assemblies with IPlugin child Types</param>
+        /// <param name="contextInfos">the assemblies with IPlugin child Types</param>
         /// <returns>a list of IPlugin Types</returns>
-        private List<IPluginTypeReference> GetPlugins(List<Assembly> assemblies)
+        private List<IPluginTypeReference> GetPlugins(List<PluginContextInfo> contextInfos)
         {
             List<IPluginTypeReference> result = default;
             List<Type> availableTypes = new List<Type>();
 
-            foreach (Assembly currentAssembly in assemblies)
+            foreach (PluginContextInfo currentContextInfo in contextInfos)
             {
                 try
                 {
-                    availableTypes.AddRange(currentAssembly.GetTypes());
+                    availableTypes.AddRange(currentContextInfo.Assembly.GetTypes());
                 }
                 catch (Exception ex)
                 {
@@ -233,30 +229,30 @@ namespace PluginDemo.Management
                 //get metadata
                 foreach (Type pluginType in pluginList)
                 {
+                    Type authorattributeType = default;
                     //get author attribute if available
-                    object[] authorAttributes = pluginType.GetCustomAttributes(typeof(AuthorAttribute), true);
-                    AuthorAttribute authorAttribute = null;
+                    foreach (PluginContextInfo pluginContextInfo in this.pluginContextInfos)
+                    {
+                        if (pluginContextInfo.PluginType.Equals(pluginType))
+                        {
+                            string nameOfAuthorAttribute = "PluginDemo.Attributes.AuthorAttribute";
+                            Assembly authorAttributeAssembly = pluginContextInfo.Context.Assemblies.Where(x => x.GetType(nameOfAuthorAttribute, true) != null).FirstOrDefault();
+                            authorattributeType = authorAttributeAssembly.GetType(nameOfAuthorAttribute);
+                        }
+                    }
+
+                    object[] authorAttributes = pluginType.GetCustomAttributes(authorattributeType, true);
+                    string authorName = "anonymous";
                     if (authorAttributes != null && authorAttributes.Length.Equals(1))
                     {
-                        authorAttribute = (AuthorAttribute)authorAttributes[0];
+                        var authorAttribute = authorAttributes[0];
+                        authorName = (string)authorattributeType.GetProperty("Name").GetValue(authorAttribute);
                     }
                     string assemblyFullname = pluginType.Assembly.FullName;
-                    string authorName;
-                    if (authorAttribute != null)
-                    {
-                        authorName = authorAttribute.Name;
-                    }
-                    else
-                    {
-                        authorName = "anonymous";
-                    }
+
 
                     IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
-
-                    //IPlugin resultPart = Activator.CreateInstance(pluginType) as IPlugin;
                     IPluginTypeReference resultPart = new PluginTypeReference(pluginType, metaData);
-                    //resultPart.SetMetaData(metaData);
-
                     result.Add(resultPart);
                 }
             }
