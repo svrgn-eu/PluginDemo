@@ -6,6 +6,9 @@ using System.Text;
 
 namespace PluginDemo.Management
 {
+    /// <summary>
+    /// this class provides a specified context for loading plugins. It is mainly corresponding to the class used in https://learn.microsoft.com/de-de/dotnet/core/tutorials/creating-app-with-plugin-support
+    /// </summary>
     internal class PluginAssemblyLoadContext : AssemblyLoadContext
     {
         #region Properties

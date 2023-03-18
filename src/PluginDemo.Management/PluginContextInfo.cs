@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace PluginDemo.Management
 {
+    /// <summary>
+    /// this class provides a collection of contextual objects around a Plugin. This is needed to ensure to have the right dependencies for the affected plugin dlls at hand, also being able to unload them.
+    /// </summary>
     internal class PluginContextInfo
     {
         #region Properties
