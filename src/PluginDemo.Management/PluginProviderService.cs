@@ -38,7 +38,7 @@ namespace PluginDemo.Management
             this.Configurations = new List<IPluginConfiguration>();
             this.Instances = new Dictionary<string, IPlugin>();
 
-            this.Reload();  // load all the plugins in the specified sub-directory.
+            this.Reload();  // load all the plugins in the specified sub-directory
         }
 
         #endregion Construction
