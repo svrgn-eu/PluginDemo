@@ -106,21 +106,16 @@ namespace PluginDemo.Tests
                 Directory.Delete(destDirname, true);
             }
 
-            bool isWatcherActive = true;
-
             IPluginProviderService provider = new PluginProviderService();
             IDirectoryChangedWatcherService watcher = new DirectoryChangedWatcherService();
             watcher.SetPath("Plugins");
             int lastNumberOfPlugins = 0;
             watcher.ContentChanged += (x, e) => 
             {
-                if (isWatcherActive)
+                provider.Reload();
+                if (provider.Plugins != null)
                 {
-                    provider.Reload();
-                    if (provider.Plugins != null)
-                    {
-                        lastNumberOfPlugins = provider.Plugins.Count;
-                    }
+                    lastNumberOfPlugins = provider.Plugins.Count;
                 }
             };  //reload avalable plgins when something has changed, omit reloading later in the code
 
