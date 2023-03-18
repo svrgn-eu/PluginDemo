@@ -143,29 +143,36 @@ namespace PluginDemo.Management
                     {
                         foreach (string potentialPlugin in dllFiles)
                         {
-                            Assembly assembly = context.Context.LoadFromAssemblyPath(potentialPlugin);
-                            Type[] types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.Name == interfaceName)).ToArray();
-                            if (types != null && types.Length.Equals(1))
+                            if (!context.Context.IsUnloading)
                             {
-                                //TODO: do not use the base assembly!
-
-                                //workaround
-                                if (assembly.FullName.ToLower().Contains("base"))
+                                Assembly assembly = context.Context.LoadFromAssemblyPath(potentialPlugin);
+                                Type[] types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.Name == interfaceName)).ToArray();
+                                if (types != null && types.Length.Equals(1))
                                 {
-                                    continue;  
+                                    //TODO: do not use the base assembly!
+
+                                    //workaround
+                                    if (assembly.FullName.ToLower().Contains("base"))
+                                    {
+                                        continue;
+                                    }
+
+                                    //TODO: set this in the context object
+                                    context.SetAssemblyName(assembly.GetName());
+
                                 }
-
-                                //TODO: set this in the context object
-                                context.SetAssemblyName(assembly.GetName());
-
-                            }
-                            else if(types != null && types.Length > 1)
-                            {
-                                // TODO: type was implemented more than once in that dll, eventual problem, needs to be handled
+                                else if (types != null && types.Length > 1)
+                                {
+                                    // TODO: type was implemented more than once in that dll, eventual problem, needs to be handled
+                                }
+                                else
+                                {
+                                    // interface was just not implemented in that dll, potentially a dependency only.
+                                }
                             }
                             else
                             { 
-                                // interface was just not implemented in that dll, potentially a dependency only.
+                                //TODO: error / Warning that the context is unloading at the very moment
                             }
                         }
                     }
@@ -213,7 +220,14 @@ namespace PluginDemo.Management
             {
                 try
                 {
-                    availableTypes.AddRange(currentContextInfo.Assembly.GetTypes());
+                    if (currentContextInfo.Assembly != null)
+                    {
+                        availableTypes.AddRange(currentContextInfo.Assembly.GetTypes());
+                    }
+                    else
+                    {
+                        availableTypes.Clear();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -221,44 +235,47 @@ namespace PluginDemo.Management
                 }
             }
 
-            // get a list of objects that implement the IPlugin interface
-            List<Type> pluginList = availableTypes.FindAll(delegate (Type t)
+            if (availableTypes.Count > 0)
             {
-                List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
-                return interfaceTypes.Contains(typeof(IPlugin));
-            });
-
-            if (pluginList != null && pluginList.Count > 0)
-            {
-                result = new List<IPluginTypeReference>();
-                //get metadata
-                foreach (Type pluginType in pluginList)
+                // get a list of objects that implement the IPlugin interface
+                List<Type> pluginList = availableTypes.FindAll(delegate (Type t)
                 {
-                    Type authorattributeType = default;
-                    //get author attribute if available
-                    foreach (PluginContextInfo pluginContextInfo in this.pluginContextInfos)
+                    List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
+                    return interfaceTypes.Contains(typeof(IPlugin));
+                });
+
+                if (pluginList != null && pluginList.Count > 0)
+                {
+                    result = new List<IPluginTypeReference>();
+                    //get metadata
+                    foreach (Type pluginType in pluginList)
                     {
-                        if (pluginContextInfo.PluginType.Equals(pluginType))
+                        Type authorattributeType = default;
+                        //get author attribute if available
+                        foreach (PluginContextInfo pluginContextInfo in this.pluginContextInfos)
                         {
-                            string nameOfAuthorAttribute = "PluginDemo.Attributes.AuthorAttribute";
-                            Assembly authorAttributeAssembly = pluginContextInfo.Context.Assemblies.Where(x => x.GetType(nameOfAuthorAttribute, true) != null).FirstOrDefault();
-                            authorattributeType = authorAttributeAssembly.GetType(nameOfAuthorAttribute);
+                            if (pluginContextInfo.PluginType.Equals(pluginType))
+                            {
+                                string nameOfAuthorAttribute = "PluginDemo.Attributes.AuthorAttribute";
+                                Assembly authorAttributeAssembly = pluginContextInfo.Context.Assemblies.Where(x => x.GetType(nameOfAuthorAttribute, true) != null).FirstOrDefault();
+                                authorattributeType = authorAttributeAssembly.GetType(nameOfAuthorAttribute);
+                            }
                         }
+
+                        object[] authorAttributes = pluginType.GetCustomAttributes(authorattributeType, true);
+                        string authorName = "anonymous";
+                        if (authorAttributes != null && authorAttributes.Length.Equals(1))
+                        {
+                            var authorAttribute = authorAttributes[0];
+                            authorName = (string)authorattributeType.GetProperty("Name").GetValue(authorAttribute);
+                        }
+                        string assemblyFullname = pluginType.Assembly.FullName;
+
+
+                        IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
+                        IPluginTypeReference resultPart = new PluginTypeReference(pluginType, metaData);
+                        result.Add(resultPart);
                     }
-
-                    object[] authorAttributes = pluginType.GetCustomAttributes(authorattributeType, true);
-                    string authorName = "anonymous";
-                    if (authorAttributes != null && authorAttributes.Length.Equals(1))
-                    {
-                        var authorAttribute = authorAttributes[0];
-                        authorName = (string)authorattributeType.GetProperty("Name").GetValue(authorAttribute);
-                    }
-                    string assemblyFullname = pluginType.Assembly.FullName;
-
-
-                    IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
-                    IPluginTypeReference resultPart = new PluginTypeReference(pluginType, metaData);
-                    result.Add(resultPart);
                 }
             }
 

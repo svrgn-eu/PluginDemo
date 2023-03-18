@@ -13,6 +13,8 @@ namespace PluginDemo.Management
     {
         #region Properties
 
+        public bool IsUnloading { get; private set; } = false;
+
         private AssemblyDependencyResolver resolver;
 
         #endregion Properties
@@ -23,8 +25,8 @@ namespace PluginDemo.Management
             : base(Name, true)
         { 
             this.resolver = new AssemblyDependencyResolver(PluginPath);
+            this.Unloading += PluginAssemblyLoadContext_Unloading;
         }
-
         #endregion Construction
 
         #region Methods
@@ -56,6 +58,13 @@ namespace PluginDemo.Management
             return IntPtr.Zero;
         }
         #endregion LoadUnmanagedDll
+
+        #region PluginAssemblyLoadContext_Unloading
+        private void PluginAssemblyLoadContext_Unloading(AssemblyLoadContext obj)
+        {
+            this.IsUnloading = true;
+        }
+        #endregion PluginAssemblyLoadContext_Unloading
 
         #endregion Methods
     }

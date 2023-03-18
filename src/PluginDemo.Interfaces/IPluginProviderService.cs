@@ -17,6 +17,7 @@ namespace PluginDemo.Interfaces
         #region Methods
 
         void Reload();
+        void Unload();
         bool AddInstance(string InstanceName, IPluginIdentifier Identifier, List<IPluginSetting> Settings = null);
         bool Exists(string InstanceName);
         IPlugin GetInstance(string InstanceName);
