@@ -128,7 +128,7 @@ namespace PluginDemo.Tests
             //int pluginTypesAfterCopy = lastNumberOfPlugins;
             int pluginTypesAfterCopy = provider.Plugins.Count;
 
-            isWatcherActive = false;
+            //isWatcherActive = false;
             watcher.Dispose();
             provider.Unload();
 
