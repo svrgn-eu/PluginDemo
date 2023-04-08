@@ -117,7 +117,7 @@ namespace PluginDemo.Tests
                 {
                     lastNumberOfPlugins = provider.Plugins.Count;
                 }
-            };  //reload avalable plgins when something has changed, omit reloading later in the code
+            };  //reload avalable plugins when something has changed, omit reloading later in the code
 
             int pluginTypesBefore = provider.Plugins.Count;
 
