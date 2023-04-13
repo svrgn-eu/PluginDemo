@@ -122,13 +122,10 @@ namespace PluginDemo.Tests
             int pluginTypesBefore = provider.Plugins.Count;
 
             PluginDemo.Helpers.FileHelper.CopyFilesRecursively(srcDirname, destDirname);
-            //File.Copy(srcFilename, destFilename);
             //wait for watcher
             Thread.Sleep(500);
-            //int pluginTypesAfterCopy = lastNumberOfPlugins;
             int pluginTypesAfterCopy = provider.Plugins.Count;
 
-            //isWatcherActive = false;
             watcher.Dispose();
             provider.Unload();
 
