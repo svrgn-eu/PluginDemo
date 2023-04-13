@@ -9,18 +9,27 @@ namespace PluginDemo.Implementations.Base
     {
         #region Properties
 
+        protected List<IPluginSetting> settings;
+
         #endregion Properties
 
         #region Construction
 
-        public BasePlugin(List<IPluginSetting> Settings) 
+        public BasePlugin()
         {
-            var x = Settings;
+            
         }
 
         #endregion Construction
 
         #region Methods
+
+        #region Initialize
+        public virtual void Initialize(List<IPluginSetting> Settings)
+        {
+            this.settings = Settings;
+        }
+        #endregion Initialize
 
         public abstract string SayHello();
 

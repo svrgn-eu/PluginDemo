@@ -8,10 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
-    <PackageReference Include="MSTest.TestAdapter" Version="2.2.10" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
-    <PackageReference Include="coverlet.collector" Version="3.1.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0-preview-20230223-05" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.0.2" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.0.2" />
+    <PackageReference Include="coverlet.collector" Version="3.2.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -24,13 +27,97 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Attributes.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Attributes.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.Base.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.Base.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.DemoPlugin1.deps.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.DemoPlugin1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Implementations.DemoPlugin1.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Interfaces.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="AdditionalPlugins\DemoPlugin1-Extra\PluginDemo.Interfaces.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="AdditionalPlugins\PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin1-0.1.0.dll">
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Attributes.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Plugins\PluginDemo.Implementations.DemoPlugin2-0.1.0.dll">
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Attributes.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.Base.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.Base.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.DemoPlugin1-0.1.0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.DemoPlugin1.deps.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.DemoPlugin1.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Implementations.DemoPlugin1.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Interfaces.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin1\PluginDemo.Interfaces.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Attributes.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Attributes.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.Base.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.Base.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.DemoPlugin2-0.1.0.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.DemoPlugin2.deps.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.DemoPlugin2.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Implementations.DemoPlugin2.pdb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Interfaces.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Plugins\DemoPlugin2\PluginDemo.Interfaces.pdb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

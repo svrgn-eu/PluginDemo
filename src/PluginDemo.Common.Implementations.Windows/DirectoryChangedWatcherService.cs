@@ -163,6 +163,13 @@ namespace PluginDemo.Common.Implementations.Windows
         }
         #endregion OnChanged
 
+        #region Dispose
+        public void Dispose()
+        {
+            this.fileSystemWatcher.Dispose();
+        }
+        #endregion Dispose
+
         #endregion Methods
 
         #region Events

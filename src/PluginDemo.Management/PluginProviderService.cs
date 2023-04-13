@@ -5,6 +5,7 @@ using PluginDemo.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -25,20 +26,19 @@ namespace PluginDemo.Management
 
         public Dictionary<string, IPlugin> Instances { get; private set; }
 
-        private List<Assembly> plugInAssemblies;
-        //private PluginAssemblyLoadContext pluginAssemblyLoadContext;
+        private List<PluginContextInfo> pluginContextInfos;
         #endregion Properties
 
         #region Construction
 
         public PluginProviderService() 
         {
-            //this.pluginAssemblyLoadContext = new PluginAssemblyLoadContext("Plugins");  //TODO: give unique name
-
+            this.pluginContextInfos = new List<PluginContextInfo>();
             this.Plugins = new List<IPluginTypeReference>();
             this.Configurations = new List<IPluginConfiguration>();
             this.Instances = new Dictionary<string, IPlugin>();
-            this.Reload();
+
+            this.Reload();  // load all the plugins in the specified sub-directory
         }
 
         #endregion Construction
@@ -53,9 +53,10 @@ namespace PluginDemo.Management
         {
             this.Plugins.Clear();
 
-            this.LoadPlugInDependencies("PluginDemo.Implementations.Base.dll", "PluginDemo.Interfaces.dll", "PluginDemo.Attributes.dll");  //load two dependencies before being able to load the plugins themselves. TODO: specify more detailed and have a dedicated folder(?)
-            this.plugInAssemblies = this.LoadPlugInAssemblies();
-            this.Plugins = GetPlugins(plugInAssemblies);
+            this.pluginContextInfos = this.CreateLoadContexts();
+            this.ScanForCorrectPluginAssemlyNames(this.pluginContextInfos);
+            this.LoadPlugInAssemblies(this.pluginContextInfos);
+            this.Plugins = this.GetPlugins(this.pluginContextInfos);
 
             //TODO: load config (also save it somewhere)
         }
@@ -64,11 +65,16 @@ namespace PluginDemo.Management
         #region Unload
         public void Unload()
         {
-            AssemblyLoadContext.Default.Unload();
+            //unload all contexts
+            foreach (PluginContextInfo pluginContextInfo in this.pluginContextInfos)
+            {
+                pluginContextInfo.Context.Unload();
+            }
 
-            //this.Plugins?.Clear();
-            //this.Configurations?.Clear();
-            //this.Instances?.Clear();
+            // clear all instance variables
+            this.Plugins?.Clear();
+            this.Configurations?.Clear();
+            this.Instances?.Clear();
         }
         #endregion Unload
 
@@ -90,25 +96,112 @@ namespace PluginDemo.Management
         }
         #endregion LoadPlugInDependencies
 
-        #region LoadPlugInAssemblies
-        private List<Assembly> LoadPlugInAssemblies()
+        #region CreateLoadContexts
+        private List<PluginContextInfo> CreateLoadContexts()
         {
-            List<Assembly> result = new List<Assembly>();
+            List<PluginContextInfo> result = default;
 
-            DirectoryInfo dInfo = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "Plugins"));
-            FileInfo[] files = dInfo.GetFiles("*.dll", SearchOption.AllDirectories);
+            DirectoryInfo pluginPath = new DirectoryInfo(Path.Combine(Environment.CurrentDirectory, "Plugins"));
+            string[] pluginDirectories = Directory.GetDirectories(pluginPath.FullName);
 
-            if (null != files)
+            if (pluginDirectories != null)
             {
-                foreach (FileInfo file in files)
+                result = new List<PluginContextInfo>();
+                foreach (string pluginDirectory in pluginDirectories)
                 {
-                    Assembly pluginAssembly = AssemblyLoadContext.Default.LoadFromAssemblyPath(file.FullName);
-                    //Assembly pluginAssembly = this.pluginAssemblyLoadContext.LoadFromAssemblyPath(file.FullName); *** Does NOT LOAD PROPERLY
-                    result.Add(pluginAssembly);
+                    PluginAssemblyLoadContext newContext = new PluginAssemblyLoadContext("SomeName", pluginDirectory);
+                    PluginContextInfo newInfo = new PluginContextInfo(newContext, pluginDirectory);
+                    result.Add(newInfo);
                 }
             }
 
             return result;
+        }
+        #endregion CreateLoadContexts
+
+        #region ScanForCorrectPluginAssemlyNames: scan all DLLs and see, which types they do export. If it matches to what we are looking for, then load it
+        /// <summary>
+        /// scan all DLLs and see, which types they do export. If it matches to what we are looking for, then load it
+        /// </summary>
+        /// <param name="contexts">a list of PluginContextIngo objects to use</param>
+        /// <returns>true, when the contexts where not null</returns>
+        private bool ScanForCorrectPluginAssemlyNames(List<PluginContextInfo> contexts)
+        {
+            //scan all DLLs and see, which types they do export. If it matches to what we are looking for, then load it
+            bool result = false;
+
+            string interfaceName = "IPlugin";  //TODO: set centrally / build reference for different INterface Types for different types of plugins
+
+            if (contexts != null)
+            {
+                result = true;
+                foreach (PluginContextInfo context in contexts)
+                {
+                    string[] dllFiles = Directory.GetFiles(context.Path, "*.dll");
+
+                    if (dllFiles != null && dllFiles.Length > 0)
+                    {
+                        foreach (string potentialPlugin in dllFiles)
+                        {
+                            if (!context.Context.IsUnloading)
+                            {
+                                Assembly assembly = context.Context.LoadFromAssemblyPath(potentialPlugin);
+                                Type[] types = assembly.GetTypes().Where(t => t.GetInterfaces().Any(i => i.Name == interfaceName)).ToArray();
+                                if (types != null && types.Length.Equals(1))
+                                {
+                                    //TODO: do not use the base assembly!
+
+                                    //workaround
+                                    if (assembly.FullName.ToLower().Contains("base"))
+                                    {
+                                        continue;
+                                    }
+
+                                    //TODO: set this in the context object
+                                    context.SetAssemblyName(assembly.GetName());
+
+                                }
+                                else if (types != null && types.Length > 1)
+                                {
+                                    // TODO: type was implemented more than once in that dll, eventual problem, needs to be handled
+                                }
+                                else
+                                {
+                                    // interface was just not implemented in that dll, potentially a dependency only.
+                                }
+                            }
+                            else
+                            { 
+                                //TODO: error / Warning that the context is unloading at the very moment
+                            }
+                        }
+                    }
+                }
+            }
+
+            return result;
+        }
+        #endregion ScanForCorrectPluginAssemlyNames
+
+        #region LoadPlugInAssemblies
+        private void LoadPlugInAssemblies(List<PluginContextInfo> contexts)
+        {
+            if (contexts != null)
+            {
+                foreach (PluginContextInfo context in contexts)
+                {
+                    if (context.AssemblyName != null)
+                    {
+                        Assembly pluginAssembly = context.Context.LoadFromAssemblyName(context.AssemblyName);
+                        context.SetAssembly(pluginAssembly);
+                        context.SetPluginType(pluginAssembly.GetExportedTypes()[0]);  //TODO: think more, make more robust, select only implementors of IPlugin
+                    }
+                    else
+                    { 
+                        //TODO: error handling, no plugin dll in the specified dir of that context
+                    }
+                }
+            }
         }
         #endregion LoadPlugInAssemblies
 
@@ -116,64 +209,73 @@ namespace PluginDemo.Management
         /// <summary>
         /// returns a list of IPlugin Types in the passed assemblies
         /// </summary>
-        /// <param name="assemblies">the assemblies with IPlugin child Types</param>
+        /// <param name="contextInfos">the assemblies with IPlugin child Types</param>
         /// <returns>a list of IPlugin Types</returns>
-        private List<IPluginTypeReference> GetPlugins(List<Assembly> assemblies)
+        private List<IPluginTypeReference> GetPlugins(List<PluginContextInfo> contextInfos)
         {
             List<IPluginTypeReference> result = default;
             List<Type> availableTypes = new List<Type>();
 
-            foreach (Assembly currentAssembly in assemblies)
+            foreach (PluginContextInfo currentContextInfo in contextInfos)
             {
                 try
                 {
-                    var x = currentAssembly.GetTypes();
-                    availableTypes.AddRange(currentAssembly.GetTypes());
-                }
-                catch (Exception ex)
-                {
-
-                }
-            }
-
-            // get a list of objects that implement the IPlugin interface
-            List<Type> pluginList = availableTypes.FindAll(delegate (Type t)
-            {
-                List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
-                return interfaceTypes.Contains(typeof(IPlugin));
-            });
-
-            if (pluginList != null && pluginList.Count > 0)
-            {
-                result = new List<IPluginTypeReference>();
-                //get metadata
-                foreach (Type pluginType in pluginList)
-                {
-                    //get author attribute if available
-                    object[] authorAttributes = pluginType.GetCustomAttributes(typeof(AuthorAttribute), true);
-                    AuthorAttribute authorAttribute = null;
-                    if (authorAttributes != null && authorAttributes.Length.Equals(1))
+                    if (currentContextInfo.Assembly != null)
                     {
-                        authorAttribute = (AuthorAttribute)authorAttributes[0];
-                    }
-                    string assemblyFullname = pluginType.Assembly.FullName;
-                    string authorName;
-                    if (authorAttribute != null)
-                    {
-                        authorName = authorAttribute.Name;
+                        availableTypes.AddRange(currentContextInfo.Assembly.GetTypes());
                     }
                     else
                     {
-                        authorName = "anonymous";
+                        availableTypes.Clear();
                     }
+                }
+                catch (Exception ex)
+                {
+                    //TODO: error
+                }
+            }
 
-                    IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
+            if (availableTypes.Count > 0)
+            {
+                // get a list of objects that implement the IPlugin interface
+                List<Type> pluginList = availableTypes.FindAll(delegate (Type t)
+                {
+                    List<Type> interfaceTypes = new List<Type>(t.GetInterfaces());
+                    return interfaceTypes.Contains(typeof(IPlugin));
+                });
 
-                    //IPlugin resultPart = Activator.CreateInstance(pluginType) as IPlugin;
-                    IPluginTypeReference resultPart = new PluginTypeReference(pluginType, metaData);
-                    //resultPart.SetMetaData(metaData);
+                if (pluginList != null && pluginList.Count > 0)
+                {
+                    result = new List<IPluginTypeReference>();
+                    //get metadata
+                    foreach (Type pluginType in pluginList)
+                    {
+                        Type authorattributeType = default;
+                        //get author attribute if available
+                        foreach (PluginContextInfo pluginContextInfo in this.pluginContextInfos)
+                        {
+                            if (pluginContextInfo.PluginType.Equals(pluginType))
+                            {
+                                string nameOfAuthorAttribute = "PluginDemo.Attributes.AuthorAttribute";
+                                Assembly authorAttributeAssembly = pluginContextInfo.Context.Assemblies.Where(x => x.GetType(nameOfAuthorAttribute, true) != null).FirstOrDefault();
+                                authorattributeType = authorAttributeAssembly.GetType(nameOfAuthorAttribute);
+                            }
+                        }
 
-                    result.Add(resultPart);
+                        object[] authorAttributes = pluginType.GetCustomAttributes(authorattributeType, true);
+                        string authorName = "anonymous";
+                        if (authorAttributes != null && authorAttributes.Length.Equals(1))
+                        {
+                            var authorAttribute = authorAttributes[0];
+                            authorName = (string)authorattributeType.GetProperty("Name").GetValue(authorAttribute);
+                        }
+                        string assemblyFullname = pluginType.Assembly.FullName;
+
+
+                        IPluginMetaData metaData = PluginMetaDataHelper.ExtractMetadata(authorName, assemblyFullname);
+                        IPluginTypeReference resultPart = new PluginTypeReference(pluginType, metaData);
+                        result.Add(resultPart);
+                    }
                 }
             }
 
@@ -191,7 +293,10 @@ namespace PluginDemo.Management
                 IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
                 if (source != null)
                 {
-                    IPlugin newInstance = Activator.CreateInstance(source.PluginType, Settings) as IPlugin;  //TODO: make better
+                    object[] parameters = null;
+                    IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
+                    //IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
+                    newInstance.Initialize(Settings);
                     this.Instances.Add(InstanceName, newInstance);
                     this.AddConfiguration(Identifier, InstanceName, Settings);
                     result = true;
@@ -274,7 +379,8 @@ namespace PluginDemo.Management
                         IPluginTypeReference pluginTypeReference = this.Plugins.Where(x => x.MetaData.Identifier.Equals(config.Identifier)).FirstOrDefault();
                         if (pluginTypeReference != null)
                         {
-                            IPlugin newInstance = Activator.CreateInstance(pluginTypeReference.PluginType, config.Settings) as IPlugin;  //TODO: make better
+                            IPlugin newInstance = Activator.CreateInstance(pluginTypeReference.PluginType) as IPlugin;  //TODO: make better
+                            newInstance.Initialize(config.Settings);
                             this.Instances.Add(config.InstanceName, newInstance);
                             this.Configurations.Add(config);
                         }

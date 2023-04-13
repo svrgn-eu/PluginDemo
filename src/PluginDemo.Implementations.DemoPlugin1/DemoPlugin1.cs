@@ -16,10 +16,10 @@ namespace PluginDemo.Implementations.DemoPlugin1
 
         #region Construction
 
-        public DemoPlugin1(List<IPluginSetting> Settings)
-            :base(Settings)
+        public DemoPlugin1()
+            : base()
         {
-            var x = Settings;
+
         }
 
         #endregion Construction

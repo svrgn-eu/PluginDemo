@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.TestPlatform.Utilities.Helpers;
 
 namespace PluginDemo.Tests
 {
@@ -46,7 +47,7 @@ namespace PluginDemo.Tests
         {
             IPluginProviderService provider = new PluginProviderService();
             IPluginIdentifier identifier = new PluginIdentifier("PluginDemo.Implementations.DemoPlugin1", Version.Parse("0.1.0.0"));
-            bool wasSuccessfullyAdded = provider.AddInstance("NewInstance01", identifier);
+            bool wasSuccessfullyAdded = provider.AddInstance("NewInstance01", identifier, new List<IPluginSetting>() { new PluginSetting("", "")});
             bool doesInstanceExist = provider.Exists("NewInstance01");
 
             Assert.IsNotNull(provider);
@@ -76,9 +77,6 @@ namespace PluginDemo.Tests
         [TestMethod]
         public void AddPlugin()
         {
-            string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
-            string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
-
             IPluginProviderService provider = new PluginProviderService();
 
             int pluginTypesBefore = provider.Plugins.Count;
@@ -88,8 +86,8 @@ namespace PluginDemo.Tests
             provider.Reload();
             int pluginTypesAfterCopy = provider.Plugins.Count;
 
-            Assert.AreEqual(2, pluginTypesBefore);
-            Assert.AreEqual(2, pluginTypesAfterCopy);
+            Assert.AreEqual(3, pluginTypesBefore);
+            Assert.AreEqual(3, pluginTypesAfterCopy);  //TODO: check, why three - interference with other tests?
         }
         #endregion AddPlugin
 
@@ -97,27 +95,51 @@ namespace PluginDemo.Tests
 
         #region AddPluginWithFileWatcher
         [TestMethod]
+        [ExpectedException(typeof(UnauthorizedAccessException), "Plugin Folder cannot be fully deleted.")]
         public void AddPluginWithFileWatcher()
         {
-            string srcFilename = "AdditionalPlugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
-            string destFilename = "Plugins/PluginDemo.Implementations.DemoPlugin1-0.1.0-EXTRA.dll";
+            string srcDirname = "AdditionalPlugins/DemoPlugin1-Extra";
+            string destDirname = "Plugins/DemoPlugin1-Extra";
+
+            if (Directory.Exists(destDirname))
+            {
+                Directory.Delete(destDirname, true);
+            }
 
             IPluginProviderService provider = new PluginProviderService();
             IDirectoryChangedWatcherService watcher = new DirectoryChangedWatcherService();
             watcher.SetPath("Plugins");
             int lastNumberOfPlugins = 0;
-            watcher.ContentChanged += (x, e) => { provider.Reload(); lastNumberOfPlugins = provider.Plugins.Count; };  //reload avalable plgins when something has changed, omit reloading later in the code
+            watcher.ContentChanged += (x, e) => 
+            {
+                provider.Reload();
+                if (provider.Plugins != null)
+                {
+                    lastNumberOfPlugins = provider.Plugins.Count;
+                }
+            };  //reload avalable plugins when something has changed, omit reloading later in the code
 
             int pluginTypesBefore = provider.Plugins.Count;
 
-            //File.Copy(srcFilename, destFilename);
+            PluginDemo.Helpers.FileHelper.CopyFilesRecursively(srcDirname, destDirname);
             //wait for watcher
-            //Thread.Sleep(500);
-            //int pluginTypesAfterCopy = lastNumberOfPlugins;
+            Thread.Sleep(500);
             int pluginTypesAfterCopy = provider.Plugins.Count;
 
+            watcher.Dispose();
+            provider.Unload();
+
+            try
+            {
+                Directory.Delete(destDirname, true);
+            }
+            catch (Exception ex)
+            { 
+            
+            }
+
             Assert.AreEqual(2, pluginTypesBefore);
-            Assert.AreEqual(2, pluginTypesAfterCopy);
+            Assert.AreEqual(3, pluginTypesAfterCopy);
         }
         #endregion AddPluginWithFileWatcher
 

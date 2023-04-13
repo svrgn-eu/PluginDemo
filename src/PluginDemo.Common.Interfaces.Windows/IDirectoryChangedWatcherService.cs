@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PluginDemo.Common.Interfaces.Windows
 {
-    public interface IDirectoryChangedWatcherService
+    public interface IDirectoryChangedWatcherService : IDisposable
     {
         //TODO: move to different interface project
         //TODO: move to common libs
