@@ -290,20 +290,27 @@ namespace PluginDemo.Management
 
             if (!this.Exists(InstanceName))
             {
-                IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
-                if (source != null)
+                if (this.Plugins != null)
                 {
-                    object[] parameters = null;
-                    IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
-                    //IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
-                    newInstance.Initialize(Settings);
-                    this.Instances.Add(InstanceName, newInstance);
-                    this.AddConfiguration(Identifier, InstanceName, Settings);
-                    result = true;
+                    IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
+                    if (source != null)
+                    {
+                        object[] parameters = null;
+                        IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
+                        //IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
+                        newInstance.Initialize(Settings);
+                        this.Instances.Add(InstanceName, newInstance);
+                        this.AddConfiguration(Identifier, InstanceName, Settings);
+                        result = true;
+                    }
+                    else
+                    { 
+                        //TODO: source is null
+                    }
                 }
                 else
-                { 
-                    //TODO: error, plugin host not loaded
+                {
+                    //TODO: error, no plugins loaded
                 }
             }
             else 
