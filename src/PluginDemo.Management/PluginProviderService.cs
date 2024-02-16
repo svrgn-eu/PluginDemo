@@ -57,6 +57,10 @@ namespace PluginDemo.Management
             this.ScanForCorrectPluginAssemlyNames(this.pluginContextInfos);
             this.LoadPlugInAssemblies(this.pluginContextInfos);
             this.Plugins = this.GetPlugins(this.pluginContextInfos);
+            if (this.Plugins is null)
+            {
+                this.Plugins = new List<IPluginTypeReference>();  //re-create if no pluginContextInfos were submitted
+            }
 
             //TODO: load config (also save it somewhere)
         }
@@ -305,7 +309,7 @@ namespace PluginDemo.Management
                     }
                     else
                     { 
-                        //TODO: source is null
+                        //TODO: source is null, instance type not listed in plugins
                     }
                 }
                 else
