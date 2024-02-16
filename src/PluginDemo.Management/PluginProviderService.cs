@@ -299,9 +299,9 @@ namespace PluginDemo.Management
                     IPluginTypeReference source = this.Plugins.Where(x => x.MetaData.Identifier.Equals(Identifier)).FirstOrDefault();
                     if (source != null)
                     {
+                        // Plugin Type found in lib, create instance
                         object[] parameters = null;
                         IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
-                        //IPlugin newInstance = source.PluginType.Assembly.CreateInstance(source.PluginType.FullName, false, BindingFlags.Default, null, parameters, CultureInfo.InvariantCulture, null) as IPlugin;
                         newInstance.Initialize(Settings);
                         this.Instances.Add(InstanceName, newInstance);
                         this.AddConfiguration(Identifier, InstanceName, Settings);

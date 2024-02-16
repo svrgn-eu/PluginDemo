@@ -8,9 +8,21 @@ namespace PluginDemo.Interfaces
     {
         #region Properties
 
+        #region Plugins: Available Plugin Types/Files which are ready to be instantiated
+        /// <summary>
+        /// Available Plugin Types/Files which are ready to be instantiated
+        /// </summary>
         List<IPluginTypeReference> Plugins { get; }
+        #endregion Plugins
+
         List<IPluginConfiguration> Configurations { get; }
+
+        #region Instances: Named Plugin Type Instances
+        /// <summary>
+        /// Named Plugin Type Instances
+        /// </summary>
         Dictionary<string, IPlugin> Instances { get; }
+        #endregion Instances
 
         #endregion Properties
 
