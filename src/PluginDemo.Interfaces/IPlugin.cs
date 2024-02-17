@@ -6,6 +6,7 @@ namespace PluginDemo.Interfaces
 {
     public interface IPlugin
     {
+        //TODO: create child interfaces for specialized plugins which provide more info (standard set) and specialized functions / methods
         #region Properties
 
         #endregion Properties
