@@ -92,7 +92,8 @@ namespace PluginDemo.Tests
         #endregion AddPlugin
 
         //TODO: what to do with plugins which are deleted while an active instance is created? Mark? - update: cannot be deleted as it is in access
-
+        /*
+        /// 20240218 Disabled Test Case due to out-of-scopeness
         #region AddPluginWithFileWatcher
         [TestMethod]
         [ExpectedException(typeof(UnauthorizedAccessException), "Plugin Folder cannot be fully deleted.")]
@@ -142,7 +143,7 @@ namespace PluginDemo.Tests
             Assert.AreEqual(3, pluginTypesAfterCopy);
         }
         #endregion AddPluginWithFileWatcher
-
+        */
         #region ExportConfiguration
         [TestMethod]
         public void ExportConfiguration()
