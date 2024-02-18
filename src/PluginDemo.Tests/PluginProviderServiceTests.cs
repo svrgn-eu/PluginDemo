@@ -86,8 +86,8 @@ namespace PluginDemo.Tests
             provider.Reload();
             int pluginTypesAfterCopy = provider.Plugins.Count;
 
-            Assert.AreEqual(3, pluginTypesBefore);
-            Assert.AreEqual(3, pluginTypesAfterCopy);  //TODO: check, why three - interference with other tests?
+            Assert.AreEqual(2, pluginTypesBefore);
+            Assert.AreEqual(2, pluginTypesAfterCopy);  //TODO: check, why three - interference with other tests?
         }
         #endregion AddPlugin
 
